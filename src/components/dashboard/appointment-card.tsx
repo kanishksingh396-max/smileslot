@@ -26,6 +26,9 @@ export function AppointmentCard({
         <CardTitle className="text-sm font-semibold truncate">
           {appointment.clientName}
         </CardTitle>
+        <CardDescription className="text-xs text-primary-foreground/80">
+          {appointment.service}
+        </CardDescription>
         <CardDescription className="flex items-center gap-1.5 text-xs text-primary-foreground/80">
           <Clock className="w-3 h-3" />
           <span>

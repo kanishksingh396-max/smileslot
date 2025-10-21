@@ -4,6 +4,7 @@ export type Appointment = {
   clientPhone: string;
   startTime: Date;
   endTime: Date;
+  service: string;
   notes?: string;
 };
 

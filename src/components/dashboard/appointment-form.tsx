@@ -9,7 +9,7 @@ import {
   suggestOptimalSlots,
   type SuggestOptimalSlotsOutput,
 } from "@/ai/flows/intelligent-slot-suggestions";
-import { workingHours, appointmentDuration } from "@/lib/data";
+import { workingHours, appointmentDuration, dentalServices } from "@/lib/data";
 import type { Appointment, TimeSlot } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,6 +55,7 @@ const formSchema = z.object({
   clientPhone: z.string().min(10, "Phone number is required."),
   date: z.date({ required_error: "A date is required." }),
   time: z.string({ required_error: "A time is required." }),
+  service: z.string({ required_error: "A service is required." }),
   notes: z.string().optional(),
 });
 
@@ -84,6 +85,7 @@ export function AppointmentForm({
     clientPhone: appointment?.clientPhone || "",
     date: appointment?.startTime || slot?.startTime || new Date(),
     time: format(appointment?.startTime || slot?.startTime || new Date(), "HH:mm"),
+    service: appointment?.service || "",
     notes: appointment?.notes || "",
   }), [appointment, slot]);
 
@@ -231,6 +233,31 @@ export function AppointmentForm({
             )}
           />
         </div>
+
+        <FormField
+          control={form.control}
+          name="service"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Service</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a service" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {dentalServices.map((service) => (
+                    <SelectItem key={service} value={service}>
+                      {service}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         
         <div className="space-y-2">
             <Button type="button" variant="outline" size="sm" onClick={handleAiSuggest} disabled={isAiLoading}>

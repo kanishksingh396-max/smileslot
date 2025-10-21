@@ -94,6 +94,10 @@
           "description": "End time of the appointment.",
           "format": "date-time"
         },
+        "service": {
+          "type": "string",
+          "description": "The service provided during the appointment."
+        },
         "notes": {
           "type": "string",
           "description": "Optional notes for the appointment."
@@ -104,7 +108,8 @@
         "clientId",
         "dentistId",
         "startTime",
-        "endTime"
+        "endTime",
+        "service"
       ]
     }
   },
