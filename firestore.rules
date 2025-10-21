@@ -1,0 +1,99 @@
+/**
+ * @file Firestore Security Rules for DentalFlow
+ * @description This ruleset enforces a strict ownership model where dentists can only access their own data.
+ *
+ * Data Structure:
+ * - /dentists/{dentistId}: Stores dentist profiles. Only the dentist can read/write their own profile.
+ * - /dentists/{dentistId}/clients/{clientId}: Stores client profiles for a specific dentist. Only the dentist can manage their clients.
+ * - /dentists/{dentistId}/appointments/{appointmentId}: Stores appointment data for a specific dentist. Only the dentist can manage their appointments.
+ *
+ * Key Security Decisions:
+ * - Path-based ownership is enforced throughout the data model.
+ * - Data validation is relaxed in this prototyping phase.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Controls access to dentist profiles.
+     * @path /dentists/{dentistId}
+     * @allow (create) User with ID 'user_abc' can create their own dentist profile at /dentists/user_abc.
+     * @deny (create) User with ID 'user_abc' cannot create a dentist profile at /dentists/user_xyz.
+     * @allow (get) User with ID 'user_abc' can read their own dentist profile at /dentists/user_abc.
+     * @deny (get) User with ID 'user_abc' cannot read a dentist profile at /dentists/user_xyz.
+     * @allow (update) User with ID 'user_abc' can update their own dentist profile at /dentists/user_abc.
+     * @deny (update) User with ID 'user_abc' cannot update a dentist profile at /dentists/user_xyz.
+     * @allow (delete) User with ID 'user_abc' can delete their own dentist profile at /dentists/user_abc.
+     * @deny (delete) User with ID 'user_abc' cannot delete a dentist profile at /dentists/user_xyz.
+     * @principle Enforces document ownership for writes; path must match authenticated user ID.
+     */
+    match /dentists/{dentistId} {
+      function isOwner(dentistId) {
+        return request.auth != null && request.auth.uid == dentistId;
+      }
+      function isExistingOwner(dentistId) {
+        return isOwner(dentistId) && resource != null;
+      }
+      allow get: if isOwner(dentistId);
+      allow list: if false;
+      allow create: if isOwner(dentistId);
+      allow update: if isExistingOwner(dentistId);
+      allow delete: if isExistingOwner(dentistId);
+    }
+
+    /**
+     * @description Controls access to client profiles for a specific dentist.
+     * @path /dentists/{dentistId}/clients/{clientId}
+     * @allow (create) User with ID 'dentist_abc' can create a client profile under their dentist profile.
+     * @deny (create) User with ID 'dentist_xyz' cannot create a client profile under 'dentist_abc'.
+     * @allow (get) User with ID 'dentist_abc' can read client profiles under their dentist profile.
+     * @deny (get) User with ID 'dentist_xyz' cannot read client profiles under 'dentist_abc'.
+     * @allow (update) User with ID 'dentist_abc' can update client profiles under their dentist profile.
+     * @deny (update) User with ID 'dentist_xyz' cannot update client profiles under 'dentist_abc'.
+     * @allow (delete) User with ID 'dentist_abc' can delete client profiles under their dentist profile.
+     * @deny (delete) User with ID 'dentist_xyz' cannot delete client profiles under 'dentist_abc'.
+     * @principle Enforces document ownership; only the dentist can manage their clients.
+     */
+    match /dentists/{dentistId}/clients/{clientId} {
+      function isOwner(dentistId) {
+        return request.auth != null && request.auth.uid == dentistId;
+      }
+       function isExistingOwner(dentistId) {
+        return isOwner(dentistId) && resource != null;
+      }
+      allow get: if isOwner(dentistId);
+      allow list: if isOwner(dentistId);
+      allow create: if isOwner(dentistId);
+      allow update: if isExistingOwner(dentistId);
+      allow delete: if isExistingOwner(dentistId);
+    }
+
+    /**
+     * @description Controls access to appointment data for a specific dentist.
+     * @path /dentists/{dentistId}/appointments/{appointmentId}
+     * @allow (create) User with ID 'dentist_abc' can create appointments under their profile.
+     * @deny (create) User with ID 'dentist_xyz' cannot create appointments under dentist 'dentist_abc'.
+     * @allow (get) User with ID 'dentist_abc' can read appointments under their profile.
+     * @deny (get) User with ID 'dentist_xyz' cannot read appointments under dentist 'dentist_abc'.
+     * @allow (update) User with ID 'dentist_abc' can update appointments under their profile.
+     * @deny (update) User with ID 'dentist_xyz' cannot update appointments under dentist 'dentist_abc'.
+     * @allow (delete) User with ID 'dentist_abc' can delete appointments under their profile.
+     * @deny (delete) User with ID 'dentist_xyz' cannot delete appointments under dentist 'dentist_abc'.
+     * @principle Enforces document ownership; only the dentist can manage their appointments.
+     */
+    match /dentists/{dentistId}/appointments/{appointmentId} {
+      function isOwner(dentistId) {
+        return request.auth != null && request.auth.uid == dentistId;
+      }
+       function isExistingOwner(dentistId) {
+        return isOwner(dentistId) && resource != null;
+      }
+      allow get: if isOwner(dentistId);
+      allow list: if isOwner(dentistId);
+      allow create: if isOwner(dentistId);
+      allow update: if isExistingOwner(dentistId);
+      allow delete: if isExistingOwner(dentistId);
+    }
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "entities": {
+    "Dentist": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Dentist",
+      "type": "object",
+      "description": "Represents a dentist in the system.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Dentist entity."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "First name of the dentist."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "Last name of the dentist."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the dentist.",
+          "format": "email"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "Phone number of the dentist."
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "email",
+        "phoneNumber"
+      ]
+    },
+    "Client": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Client",
+      "type": "object",
+      "description": "Represents a client of the dentist.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Client entity."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "First name of the client."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "Last name of the client."
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "Phone number of the client."
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "phoneNumber"
+      ]
+    },
+    "Appointment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Appointment",
+      "type": "object",
+      "description": "Represents an appointment scheduled with a client.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Appointment entity."
+        },
+        "clientId": {
+          "type": "string",
+          "description": "Reference to Client. (Relationship: Client 1:N Appointment)"
+        },
+        "dentistId": {
+          "type": "string",
+          "description": "Reference to Dentist. (Relationship: Dentist 1:N Appointment)"
+        },
+        "startTime": {
+          "type": "string",
+          "description": "Start time of the appointment.",
+          "format": "date-time"
+        },
+        "endTime": {
+          "type": "string",
+          "description": "End time of the appointment.",
+          "format": "date-time"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Optional notes for the appointment."
+        }
+      },
+      "required": [
+        "id",
+        "clientId",
+        "dentistId",
+        "startTime",
+        "endTime"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "dentists/{dentistId}",
+        "definition": {
+          "entityName": "Dentist",
+          "schema": {
+            "$ref": "#/backend/entities/Dentist"
+          },
+          "description": "Stores dentist profiles.  Uses path-based ownership. Includes the dentist's unique ID.",
+          "params": [
+            {
+              "name": "dentistId",
+              "description": "Unique identifier for the dentist."
+            }
+          ]
+        }
+      },
+      {
+        "path": "dentists/{dentistId}/clients/{clientId}",
+        "definition": {
+          "entityName": "Client",
+          "schema": {
+            "$ref": "#/backend/entities/Client"
+          },
+          "description": "Stores client profiles associated with a specific dentist. Uses path-based ownership for secure access. Includes denormalized dentistId within each client document.",
+          "params": [
+            {
+              "name": "dentistId",
+              "description": "Unique identifier for the dentist."
+            },
+            {
+              "name": "clientId",
+              "description": "Unique identifier for the client."
+            }
+          ]
+        }
+      },
+      {
+        "path": "dentists/{dentistId}/appointments/{appointmentId}",
+        "definition": {
+          "entityName": "Appointment",
+          "schema": {
+            "$ref": "#/backend/entities/Appointment"
+          },
+          "description": "Stores appointment data for a dentist.  Uses path-based ownership. Includes denormalized dentistId within each appointment document.",
+          "params": [
+            {
+              "name": "dentistId",
+              "description": "Unique identifier for the dentist."
+            },
+            {
+              "name": "appointmentId",
+              "description": "Unique identifier for the appointment."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "This Firestore data structure is designed to support the DentalFlow application, focusing on secure and efficient management of dentist, client, and appointment data. It prioritizes authorization independence and structural segregation for clear security rules and scalable operations.  The structure utilizes path-based ownership for dentist-owned data (clients and appointments), simplifying security rules and improving performance. The `dentists/{dentistId}/clients/{clientId}` and `dentists/{dentistId}/appointments/{appointmentId}` paths reflect a hierarchical ownership model. This allows for easy querying of clients and appointments belonging to a specific dentist, enforcing clear ownership. The design avoids `get()` calls in security rules by relying on path-based ownership."
+  }
+}
