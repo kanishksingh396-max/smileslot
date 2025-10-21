@@ -61,13 +61,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   return (
     <SidebarProvider>
       <Sidebar>
-        <SidebarHeader>
-          <div className="flex items-center gap-3 p-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <Tooth className="h-5 w-5" />
-            </div>
-          </div>
-        </SidebarHeader>
+        <SidebarHeader />
         <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
