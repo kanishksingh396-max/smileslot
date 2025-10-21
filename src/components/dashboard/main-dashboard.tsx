@@ -23,7 +23,7 @@ import {
   updateDocumentNonBlocking,
   deleteDocumentNonBlocking,
 } from '@/firebase';
-import { collection, doc } from 'firebase/firestore';
+import { collection, doc, addDoc } from 'firebase/firestore';
 import { Card } from '@/components/ui/card';
 import { Button } from '../ui/button';
 import { Plus } from 'lucide-react';
@@ -134,7 +134,8 @@ export function MainDashboard() {
     }
 
     try {
-      const docRef = await addDocumentNonBlocking(patientsCollectionRef, newPatientData);
+      // We use addDoc here to get the doc reference with ID back
+      const docRef = await addDoc(patientsCollectionRef, newPatientData);
       toast({
         title: 'Patient Added',
         description: `${patientData.name} has been successfully added.`,

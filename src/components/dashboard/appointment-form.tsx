@@ -42,6 +42,8 @@ import {
   Loader2,
   Sparkles,
   UserPlus,
+  Check,
+  ChevronsUpDown,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -99,6 +101,7 @@ export function AppointmentForm({
     useState<SuggestOptimalSlotsOutput>([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [isPatientDialogOpen, setIsPatientDialogOpen] = useState(false);
+  const [isPatientComboboxOpen, setIsPatientComboboxOpen] = useState(false);
 
   const selectedPatient = useMemo(() => {
     return patients.find((p) => p.id === appointment?.patientId);
@@ -194,7 +197,7 @@ export function AppointmentForm({
             <FormItem className="flex flex-col">
               <FormLabel>Patient</FormLabel>
               <div className="flex gap-2">
-              <Popover>
+              <Popover open={isPatientComboboxOpen} onOpenChange={setIsPatientComboboxOpen}>
                 <PopoverTrigger asChild>
                   <FormControl>
                     <Button
@@ -210,6 +213,7 @@ export function AppointmentForm({
                             (patient) => patient.id === field.value
                           )?.name
                         : "Select patient"}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
@@ -224,9 +228,18 @@ export function AppointmentForm({
                             value={patient.name}
                             key={patient.id}
                             onSelect={() => {
-                              form.setValue("patientId", patient.id)
+                              form.setValue("patientId", patient.id);
+                              setIsPatientComboboxOpen(false);
                             }}
                           >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                patient.id === field.value
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
                             {patient.name}
                           </CommandItem>
                         ))}

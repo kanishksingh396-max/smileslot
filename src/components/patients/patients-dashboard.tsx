@@ -90,7 +90,7 @@ export function PatientsDashboard() {
 
   const patientsWithDates = (patients || []).map(p => ({
     ...p,
-    lastVisit: (p.lastVisit as any)?.toDate() || new Date(),
+    lastVisit: (p.lastVisit as any)?.toDate ? (p.lastVisit as any).toDate() : new Date(p.lastVisit),
   }));
 
   return (
