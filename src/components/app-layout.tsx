@@ -53,7 +53,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Tooth className="h-5 w-5" />
             </div>
-            <span className="text-xl font-semibold font-headline">DentalFlow</span>
+            <span className="text-xl font-semibold font-headline">SmileSlot</span>
           </Link>
         </div>
         <div className="flex items-center gap-4">

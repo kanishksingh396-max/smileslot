@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from "@/firebase";
 
 export const metadata: Metadata = {
-  title: "DentalFlow",
+  title: "SmileSlot",
   description:
     "Simple, intuitive web application for a single-practitioner dentist to manage appointments with clients.",
 };
