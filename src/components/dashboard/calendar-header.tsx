@@ -38,8 +38,9 @@ export function CalendarHeader({
         </div>
       </div>
       <div className="flex items-center gap-4">
-        <Button onClick={onAddAppointment} className="bg-accent text-accent-foreground hover:bg-accent/90">
-          <Plus className="mr-2 h-4 w-4" /> Add Appointment
+        <Button onClick={onAddAppointment} size="icon" className="bg-accent text-accent-foreground hover:bg-accent/90">
+          <Plus className="h-4 w-4" />
+          <span className="sr-only">Add Appointment</span>
         </Button>
       </div>
     </div>
