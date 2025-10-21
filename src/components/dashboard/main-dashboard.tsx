@@ -26,7 +26,8 @@ import {
 import { collection, doc, addDoc } from 'firebase/firestore';
 import { Card } from '@/components/ui/card';
 import { Button } from '../ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, Menu } from 'lucide-react';
+import Link from 'next/link';
 
 export function MainDashboard() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -209,6 +210,16 @@ export function MainDashboard() {
           </div>
         </SheetContent>
       </Sheet>
+
+      <Button
+        asChild
+        className="fixed bottom-6 left-6 h-14 w-14 rounded-full bg-secondary text-secondary-foreground shadow-lg hover:bg-secondary/90"
+      >
+        <Link href="/today">
+          <Menu className="h-6 w-6" />
+          <span className="sr-only">Today's Appointments</span>
+        </Link>
+      </Button>
 
       <Button
         onClick={handleAddAppointment}
