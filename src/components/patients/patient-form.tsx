@@ -29,7 +29,6 @@ import {
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
-  email: z.string().email("Invalid email address."),
   phone: z.string().min(10, "Phone number is required."),
 });
 
@@ -50,7 +49,6 @@ export function PatientForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: patient?.name || "",
-      email: patient?.email || "",
       phone: patient?.phone || "",
     },
   });
@@ -66,19 +64,6 @@ export function PatientForm({
               <FormLabel>Full Name</FormLabel>
               <FormControl>
                 <Input placeholder="John Doe" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email Address</FormLabel>
-              <FormControl>
-                <Input placeholder="john.doe@example.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

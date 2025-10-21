@@ -1,5 +1,6 @@
 export type Appointment = {
   id: string;
+  patientId: string;
   clientName: string;
   clientPhone: string;
   startTime: Date;
@@ -17,7 +18,7 @@ export type Patient = {
   id: string;
   name: string;
   phone: string;
-  email: string;
+  email?: string;
   lastVisit: Date;
   totalAppointments: number;
 };

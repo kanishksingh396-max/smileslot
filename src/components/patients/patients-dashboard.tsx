@@ -12,15 +12,32 @@ import {
 import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Patient } from "@/lib/types";
-import { mockPatients } from "@/lib/data";
 import { PatientForm } from "./patient-form";
 import { PatientsTable } from "./patients-table";
+import {
+  useCollection,
+  useFirestore,
+  useUser,
+  useMemoFirebase,
+  addDocumentNonBlocking,
+  updateDocumentNonBlocking,
+  deleteDocumentNonBlocking,
+} from '@/firebase';
+import { collection, doc } from 'firebase/firestore';
 
 export function PatientsDashboard() {
-  const [patients, setPatients] = useState<Patient[]>(mockPatients);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const { toast } = useToast();
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const patientsCollectionRef = useMemoFirebase(() => {
+    if (!user) return null;
+    return collection(firestore, 'dentists', user.uid, 'clients');
+  }, [firestore, user]);
+
+  const { data: patients, isLoading } = useCollection<Patient>(patientsCollectionRef);
 
   const handleAddPatient = () => {
     setSelectedPatient(null);
@@ -32,28 +49,25 @@ export function PatientsDashboard() {
     setIsSheetOpen(true);
   };
 
-  const handleFormSubmit = (data: Omit<Patient, "id" | "lastVisit" | "totalAppointments">) => {
+  const handleFormSubmit = (data: Omit<Patient, "id" | "lastVisit" | "totalAppointments" | "email">) => {
+    if (!patientsCollectionRef) return;
+
     if (selectedPatient) {
       // Edit existing patient
-      const updatedPatients = patients.map((p) =>
-        p.id === selectedPatient.id
-          ? { ...selectedPatient, ...data }
-          : p
-      );
-      setPatients(updatedPatients);
+      const docRef = doc(patientsCollectionRef, selectedPatient.id);
+      updateDocumentNonBlocking(docRef, data);
       toast({
         title: "Patient Updated",
         description: `Information for ${data.name} has been successfully updated.`,
       });
     } else {
       // Create new patient
-      const newPatient: Patient = {
+      const newPatient = {
         ...data,
-        id: Date.now().toString(),
         lastVisit: new Date(),
         totalAppointments: 0,
       };
-      setPatients([newPatient, ...patients]);
+      addDocumentNonBlocking(patientsCollectionRef, newPatient);
       toast({
         title: "Patient Added",
         description: `${data.name} has been successfully added to your records.`,
@@ -63,7 +77,9 @@ export function PatientsDashboard() {
   };
 
   const handleDeletePatient = (patientId: string) => {
-    setPatients(patients.filter((p) => p.id !== patientId));
+    if (!patientsCollectionRef) return;
+    const docRef = doc(patientsCollectionRef, patientId);
+    deleteDocumentNonBlocking(docRef);
     toast({
       title: "Patient Deleted",
       description: "The patient has been successfully deleted.",
@@ -71,6 +87,11 @@ export function PatientsDashboard() {
     });
     setIsSheetOpen(false);
   };
+
+  const patientsWithDates = (patients || []).map(p => ({
+    ...p,
+    lastVisit: (p.lastVisit as any)?.toDate() || new Date(),
+  }));
 
   return (
     <div className="space-y-6">
@@ -83,7 +104,7 @@ export function PatientsDashboard() {
         </Button>
       </div>
 
-      <PatientsTable patients={patients} onEdit={handleEditPatient} />
+      <PatientsTable patients={patientsWithDates} onEdit={handleEditPatient} isLoading={isLoading} />
 
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent className="w-full max-w-md sm:max-w-lg overflow-y-auto">

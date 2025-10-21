@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { addWeeks, subWeeks, startOfToday } from 'date-fns';
-import type { Appointment, TimeSlot } from '@/lib/types';
+import type { Appointment, TimeSlot, Patient } from '@/lib/types';
 import { CalendarHeader } from './calendar-header';
 import { WeeklyView } from './weekly-view';
 import {
@@ -41,8 +41,15 @@ export function MainDashboard() {
     return collection(firestore, 'dentists', user.uid, 'appointments');
   }, [firestore, user]);
 
-  const { data: appointments, isLoading } =
+  const patientsCollectionRef = useMemoFirebase(() => {
+    if (!user) return null;
+    return collection(firestore, 'dentists', user.uid, 'clients');
+  }, [firestore, user]);
+
+  const { data: appointments } =
     useCollection<Appointment>(appointmentsCollectionRef);
+  const { data: patients, isLoading: patientsLoading } =
+    useCollection<Patient>(patientsCollectionRef);
 
   const handleAddAppointment = () => {
     setSelectedAppointment(null);
@@ -62,26 +69,43 @@ export function MainDashboard() {
     setIsSheetOpen(true);
   };
 
-  const handleFormSubmit = (data: Omit<Appointment, 'id'>) => {
+  const handleFormSubmit = (data: Omit<Appointment, 'id' | 'clientName' | 'clientPhone'> & {patientId: string}) => {
     if (!appointmentsCollectionRef) return;
+    
+    const patient = patients?.find(p => p.id === data.patientId);
+    if (!patient) {
+      toast({
+        title: 'Error',
+        description: 'Selected patient not found.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const appointmentData = {
+      ...data,
+      clientName: patient.name,
+      clientPhone: patient.phone,
+    };
+
 
     if (selectedAppointment) {
       // Edit existing appointment
       const docRef = doc(appointmentsCollectionRef, selectedAppointment.id);
-      updateDocumentNonBlocking(docRef, data);
+      updateDocumentNonBlocking(docRef, appointmentData);
       toast({
         title: 'Appointment Updated',
-        description: `Appointment for ${data.clientName} has been successfully updated.`,
+        description: `Appointment for ${appointmentData.clientName} has been successfully updated.`,
       });
     } else {
       // Create new appointment
-      addDocumentNonBlocking(appointmentsCollectionRef, data);
+      addDocumentNonBlocking(appointmentsCollectionRef, appointmentData);
       toast({
         title: 'Appointment Scheduled',
-        description: `Appointment for ${data.clientName} has been successfully scheduled.`,
+        description: `Appointment for ${appointmentData.clientName} has been successfully scheduled.`,
       });
       // TODO: Implement actual SMS/WhatsApp notification
-      console.log(`Sending SMS confirmation to ${data.clientPhone}...`);
+      console.log(`Sending SMS confirmation to ${appointmentData.clientPhone}...`);
     }
     setIsSheetOpen(false);
   };
@@ -97,6 +121,33 @@ export function MainDashboard() {
     });
     setIsSheetOpen(false);
   };
+
+    const handleAddPatient = async (patientData: Omit<Patient, 'id' | 'lastVisit' | 'totalAppointments' | 'email'>) => {
+    if (!patientsCollectionRef) return;
+    
+    const newPatientData = {
+      ...patientData,
+      lastVisit: new Date(),
+      totalAppointments: 0,
+    }
+
+    try {
+      const docRef = await addDocumentNonBlocking(patientsCollectionRef, newPatientData);
+      toast({
+        title: 'Patient Added',
+        description: `${patientData.name} has been successfully added.`,
+      });
+      return { ...newPatientData, id: docRef.id } as Patient;
+    } catch (error) {
+       toast({
+        title: 'Error adding patient',
+        description: 'An unexpected error occurred.',
+        variant: 'destructive',
+      });
+      return undefined;
+    }
+  };
+
 
   const appointmentsWithDates = useMemo(() => {
     return (
@@ -144,10 +195,12 @@ export function MainDashboard() {
               key={selectedAppointment?.id || 'new'}
               appointment={selectedAppointment}
               slot={selectedSlot}
+              patients={patients || []}
               onSubmit={handleFormSubmit}
               onDelete={
                 selectedAppointment ? handleDeleteAppointment : undefined
               }
+              onAddPatient={handleAddPatient}
               clientHistory="No previous appointments."
               appointmentNotes="Client reports sensitivity in the upper right quadrant."
             />
