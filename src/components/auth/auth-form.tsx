@@ -22,8 +22,10 @@ import {
 } from "@/firebase/non-blocking-login";
 import { useToast } from "@/hooks/use-toast";
 import { FirebaseError } from "firebase/app";
+import { updateProfile } from "firebase/auth";
 
 const formSchema = z.object({
+  name: z.string().optional(),
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
@@ -42,8 +44,17 @@ export function AuthForm({ type }: AuthFormProps) {
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema.superRefine((data, ctx) => {
+      if (type === 'signup' && !data.name) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['name'],
+          message: 'Name is required.',
+        });
+      }
+    })),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
@@ -53,10 +64,16 @@ export function AuthForm({ type }: AuthFormProps) {
     try {
       if (type === "login") {
         await initiateEmailSignIn(auth, values.email, values.password);
+        router.push("/");
       } else {
-        await initiateEmailSignUp(auth, values.email, values.password);
+        const userCredential = await initiateEmailSignUp(auth, values.email, values.password);
+        if (userCredential && userCredential.user && values.name) {
+          await updateProfile(userCredential.user, {
+            displayName: values.name,
+          });
+        }
+        router.push("/");
       }
-      router.push("/");
     } catch (error) {
       let errorMessage = "An unexpected error occurred.";
       if (error instanceof FirebaseError) {
@@ -72,6 +89,8 @@ export function AuthForm({ type }: AuthFormProps) {
             errorMessage = error.message;
             break;
         }
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
       }
       toast({
         title: "Authentication Failed",
@@ -88,12 +107,27 @@ export function AuthForm({ type }: AuthFormProps) {
           {type === "login" ? "Welcome back" : "Create an account"}
         </h1>
         <p className="text-sm text-muted-foreground">
-          Enter your email and password below to{" "}
+          Enter your details below to{" "}
           {type === "login" ? "log in" : "create your account"}.
         </p>
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          {type === 'signup' && (
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="John Doe" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
           <FormField
             control={form.control}
             name="email"
