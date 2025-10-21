@@ -64,22 +64,22 @@ export function AuthForm({ type }: AuthFormProps) {
     try {
       if (type === "login") {
         await initiateEmailSignIn(auth, values.email, values.password);
-        router.push("/");
       } else {
         const userCredential = await initiateEmailSignUp(auth, values.email, values.password);
-        if (userCredential && userCredential.user && values.name) {
+        if (userCredential?.user && values.name) {
           await updateProfile(userCredential.user, {
             displayName: values.name,
           });
         }
-        router.push("/");
       }
+      router.push("/");
     } catch (error) {
       let errorMessage = "An unexpected error occurred.";
       if (error instanceof FirebaseError) {
         switch (error.code) {
           case "auth/user-not-found":
           case "auth/wrong-password":
+          case "auth/invalid-credential":
             errorMessage = "Invalid email or password.";
             break;
           case "auth/email-already-in-use":
