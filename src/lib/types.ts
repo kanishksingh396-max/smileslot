@@ -11,3 +11,12 @@ export type TimeSlot = {
   startTime: Date;
   endTime: Date;
 };
+
+export type Patient = {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  lastVisit: Date;
+  totalAppointments: number;
+};

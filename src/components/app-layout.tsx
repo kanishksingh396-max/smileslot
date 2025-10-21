@@ -1,4 +1,7 @@
 
+import Link from "next/link";
+import { Button } from "./ui/button";
+
 const Tooth = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -23,13 +26,23 @@ type AppLayoutProps = {
 export function AppLayout({ children }: AppLayoutProps) {
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
-      <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-card px-4 shadow-sm md:px-6">
+      <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-card px-4 shadow-sm md:px-6 justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            <Tooth className="h-5 w-5" />
-          </div>
-          <span className="text-xl font-semibold font-headline">DentalFlow</span>
+          <Link href="/" className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
+              <Tooth className="h-5 w-5" />
+            </div>
+            <span className="text-xl font-semibold font-headline">DentalFlow</span>
+          </Link>
         </div>
+        <nav className="flex items-center gap-4">
+          <Button variant="ghost" asChild>
+            <Link href="/">Appointments</Link>
+          </Button>
+          <Button variant="ghost" asChild>
+            <Link href="/patients">Patients</Link>
+          </Button>
+        </nav>
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6 lg:p-8">
         {children}
