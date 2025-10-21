@@ -1,6 +1,5 @@
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -35,11 +34,6 @@ export function AppointmentCard({
           </span>
         </CardDescription>
       </CardHeader>
-      {appointment.notes && (
-        <CardContent className="p-2 pt-0">
-          <p className="text-xs opacity-70 truncate">{appointment.notes}</p>
-        </CardContent>
-      )}
     </Card>
   );
 }
