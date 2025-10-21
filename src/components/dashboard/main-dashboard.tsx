@@ -213,7 +213,7 @@ export function MainDashboard() {
 
       <Button
         asChild
-        className="fixed bottom-6 left-6 h-14 w-14 rounded-full bg-secondary text-secondary-foreground shadow-lg hover:bg-secondary/90"
+        className="fixed bottom-6 left-6 h-14 w-14 rounded-full bg-accent text-accent-foreground shadow-lg hover:bg-accent/90"
       >
         <Link href="/today">
           <Menu className="h-6 w-6" />
