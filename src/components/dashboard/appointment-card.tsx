@@ -21,10 +21,10 @@ export function AppointmentCard({
   return (
     <Card
       onClick={onClick}
-      className="w-full h-full cursor-pointer bg-primary/20 hover:bg-primary/30 transition-colors flex flex-col justify-center rounded-lg shadow-sm border-l-4 border-primary"
+      className="w-full h-full cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex flex-col justify-center rounded-lg shadow-md"
     >
       <CardHeader className="p-2">
-        <CardTitle className="text-sm font-semibold text-primary-foreground truncate">
+        <CardTitle className="text-sm font-semibold truncate">
           {appointment.clientName}
         </CardTitle>
         <CardDescription className="flex items-center gap-1.5 text-xs text-primary-foreground/80">
@@ -37,7 +37,7 @@ export function AppointmentCard({
       </CardHeader>
       {appointment.notes && (
         <CardContent className="p-2 pt-0">
-          <p className="text-xs text-primary-foreground/70 truncate">{appointment.notes}</p>
+          <p className="text-xs opacity-70 truncate">{appointment.notes}</p>
         </CardContent>
       )}
     </Card>
