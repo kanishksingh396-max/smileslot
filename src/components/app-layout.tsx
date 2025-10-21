@@ -66,7 +66,6 @@ export function AppLayout({ children }: AppLayoutProps) {
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Tooth className="h-5 w-5" />
             </div>
-            <span className="text-xl font-semibold font-headline">SmileSlot</span>
           </div>
         </SidebarHeader>
         <SidebarContent>
@@ -120,7 +119,9 @@ export function AppLayout({ children }: AppLayoutProps) {
       <SidebarInset>
         <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-card px-4 shadow-sm md:px-6 justify-between">
           <SidebarTrigger />
-          <h1 className="text-lg font-semibold md:text-2xl"></h1>
+          <div className="flex items-center gap-3">
+              <span className="text-xl font-semibold font-headline">SmileSlot</span>
+            </div>
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6 lg:p-8">
           {children}
