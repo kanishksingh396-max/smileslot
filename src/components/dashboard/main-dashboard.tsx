@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { addWeeks, subWeeks, startOfToday } from "date-fns";
-import { mockAppointments } from "@/lib/data";
 import type { Appointment, TimeSlot } from "@/lib/types";
 import { CalendarHeader } from "./calendar-header";
 import { WeeklyView } from "./weekly-view";
@@ -16,16 +15,34 @@ import {
 import { AppointmentForm } from "./appointment-form";
 import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
+import {
+  useCollection,
+  useFirestore,
+  useUser,
+  useMemoFirebase,
+  addDocumentNonBlocking,
+  updateDocumentNonBlocking,
+  deleteDocumentNonBlocking,
+} from "@/firebase";
+import { collection, doc } from "firebase/firestore";
 
 export function MainDashboard() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [appointments, setAppointments] =
-    useState<Appointment[]>(mockAppointments);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
   const { toast } = useToast();
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const appointmentsCollectionRef = useMemoFirebase(() => {
+    if (!user) return null;
+    return collection(firestore, "dentists", user.uid, "appointments");
+  }, [firestore, user]);
+
+  const { data: appointments, isLoading } =
+    useCollection<Appointment>(appointmentsCollectionRef);
 
   const handleAddAppointment = () => {
     setSelectedAppointment(null);
@@ -34,32 +51,33 @@ export function MainDashboard() {
   };
 
   const handleSlotClick = (slot: TimeSlot) => {
+    if (!user) return router.push("/login");
     setSelectedAppointment(null);
     setSelectedSlot(slot);
     setIsSheetOpen(true);
   };
 
   const handleAppointmentClick = (appointment: Appointment) => {
+    if (!user) return router.push("/login");
     setSelectedAppointment(appointment);
     setSelectedSlot(null);
     setIsSheetOpen(true);
   };
 
-  const handleFormSubmit = (data: Omit<Appointment, "id" | "endTime">) => {
+  const handleFormSubmit = (data: Omit<Appointment, "id">) => {
+    if (!appointmentsCollectionRef) return;
+  
     if (selectedAppointment) {
       // Edit existing appointment
-      const updatedAppointments = appointments.map((appt) =>
-        appt.id === selectedAppointment.id ? { ...appt, ...data } : appt
-      );
-      setAppointments(updatedAppointments);
+      const docRef = doc(appointmentsCollectionRef, selectedAppointment.id);
+      updateDocumentNonBlocking(docRef, data);
       toast({
         title: "Appointment Updated",
         description: `Appointment for ${data.clientName} has been successfully updated.`,
       });
     } else {
       // Create new appointment
-      const newAppointment = { ...data, id: Date.now().toString() };
-      setAppointments([...appointments, newAppointment]);
+      addDocumentNonBlocking(appointmentsCollectionRef, data);
       toast({
         title: "Appointment Scheduled",
         description: `Appointment for ${data.clientName} has been successfully scheduled.`,
@@ -69,9 +87,11 @@ export function MainDashboard() {
     }
     setIsSheetOpen(false);
   };
-
-  const handleDeleteAppointment = (appointmentId: string) => {
-    setAppointments(appointments.filter((appt) => appt.id !== appointmentId));
+  
+  const handleDeleteAppointment = () => {
+    if (!appointmentsCollectionRef || !selectedAppointment) return;
+    const docRef = doc(appointmentsCollectionRef, selectedAppointment.id);
+    deleteDocumentNonBlocking(docRef);
     toast({
       title: "Appointment Deleted",
       description: "The appointment has been successfully deleted.",
@@ -79,6 +99,14 @@ export function MainDashboard() {
     });
     setIsSheetOpen(false);
   };
+
+  const appointmentsWithDates = useMemo(() => {
+    return appointments?.map(appt => ({
+      ...appt,
+      startTime: (appt.startTime as any).toDate(),
+      endTime: (appt.endTime as any).toDate(),
+    })) || [];
+  }, [appointments]);
 
   return (
     <div className="space-y-6">
@@ -93,7 +121,7 @@ export function MainDashboard() {
       <Card className="shadow-sm">
         <WeeklyView
           currentDate={currentDate}
-          appointments={appointments}
+          appointments={appointmentsWithDates}
           onSlotClick={handleSlotClick}
           onAppointmentClick={handleAppointmentClick}
         />
@@ -119,7 +147,7 @@ export function MainDashboard() {
               onSubmit={handleFormSubmit}
               onDelete={
                 selectedAppointment
-                  ? () => handleDeleteAppointment(selectedAppointment.id)
+                  ? handleDeleteAppointment
                   : undefined
               }
               clientHistory="No previous appointments."
