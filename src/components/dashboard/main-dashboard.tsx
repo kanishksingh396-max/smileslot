@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { addWeeks, subWeeks, startOfToday } from 'date-fns';
 import type { Appointment, TimeSlot, Patient } from '@/lib/types';
 import { CalendarHeader } from './calendar-header';
@@ -30,7 +30,7 @@ import { Plus, Menu } from 'lucide-react';
 import Link from 'next/link';
 
 export function MainDashboard() {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null);
@@ -38,6 +38,10 @@ export function MainDashboard() {
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
+
+  useEffect(() => {
+    setCurrentDate(new Date());
+  }, []);
 
   const appointmentsCollectionRef = useMemoFirebase(() => {
     if (!user) return null;
@@ -162,6 +166,11 @@ export function MainDashboard() {
       })) || []
     );
   }, [appointments]);
+  
+  if (!currentDate) {
+    return null; // Or a loading spinner
+  }
+
 
   return (
     <div className="space-y-6">
@@ -170,6 +179,7 @@ export function MainDashboard() {
         onPrevWeek={() => setCurrentDate(subWeeks(currentDate, 1))}
         onNextWeek={() => setCurrentDate(addWeeks(currentDate, 1))}
         onToday={() => setCurrentDate(startOfToday())}
+        appointments={appointmentsWithDates}
       />
 
       <Card className="shadow-sm">

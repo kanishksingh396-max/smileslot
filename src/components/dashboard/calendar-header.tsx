@@ -2,14 +2,17 @@
 
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { ChevronLeft, ChevronRight, Users } from "lucide-react";
+import { ChevronLeft, ChevronRight, Users, Bell } from "lucide-react";
 import Link from "next/link";
+import { NotificationsPanel } from "./notifications-panel";
+import type { Appointment } from "@/lib/types";
 
 type CalendarHeaderProps = {
   currentDate: Date;
   onPrevWeek: () => void;
   onNextWeek: () => void;
   onToday: () => void;
+  appointments: Appointment[];
 };
 
 export function CalendarHeader({
@@ -17,6 +20,7 @@ export function CalendarHeader({
   onPrevWeek,
   onNextWeek,
   onToday,
+  appointments,
 }: CalendarHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -43,6 +47,7 @@ export function CalendarHeader({
             Patients
           </Link>
         </Button>
+        <NotificationsPanel appointments={appointments} />
       </div>
     </div>
   );
