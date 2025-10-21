@@ -5,7 +5,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   UserCredential,
-  // Assume getAuth and app are initialized elsewhere
+  GoogleAuthProvider,
+  signInWithPopup,
 } from 'firebase/auth';
 
 /** Initiate anonymous sign-in (non-blocking). */
@@ -27,4 +28,10 @@ export function initiateEmailSignIn(authInstance: Auth, email: string, password:
   // CRITICAL: Call signInWithEmailAndPassword directly. Do NOT use 'await signInWithEmailAndPassword(...)'.
   return signInWithEmailAndPassword(authInstance, email, password);
   // Code continues immediately. Auth state change is handled by onAuthStateChanged listener.
+}
+
+/** Initiate Google sign-in (non-blocking). */
+export function initiateGoogleSignIn(authInstance: Auth): Promise<UserCredential> {
+  const provider = new GoogleAuthProvider();
+  return signInWithPopup(authInstance, provider);
 }

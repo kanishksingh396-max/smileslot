@@ -19,10 +19,21 @@ import { useAuth } from "@/firebase";
 import {
   initiateEmailSignIn,
   initiateEmailSignUp,
+  initiateGoogleSignIn,
 } from "@/firebase/non-blocking-login";
 import { useToast } from "@/hooks/use-toast";
 import { FirebaseError } from "firebase/app";
 import { updateProfile } from "firebase/auth";
+
+const GoogleIcon = () => (
+  <svg className="h-4 w-4" viewBox="0 0 24 24">
+    <path
+      fill="currentColor"
+      d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.75 8.36,4.73 12.19,4.73C15.28,4.73 17.27,6.8 17.27,6.8L19.6,4.54C19.6,4.54 16.56,2 12.19,2C6.42,2 2.03,6.8 2.03,12C2.03,17.2 6.42,22 12.19,22C17.6,22 21.5,18.33 21.5,12.33C21.5,11.76 21.45,11.43 21.35,11.1Z"
+    />
+  </svg>
+);
+
 
 const formSchema = z.object({
   name: z.string().optional(),
@@ -74,30 +85,46 @@ export function AuthForm({ type }: AuthFormProps) {
       }
       router.push("/");
     } catch (error) {
-      let errorMessage = "An unexpected error occurred.";
-      if (error instanceof FirebaseError) {
-        switch (error.code) {
-          case "auth/user-not-found":
-          case "auth/wrong-password":
-          case "auth/invalid-credential":
-            errorMessage = "Invalid email or password.";
-            break;
-          case "auth/email-already-in-use":
-            errorMessage = "This email is already in use.";
-            break;
-          default:
-            errorMessage = error.message;
-            break;
-        }
-      } else if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-      toast({
-        title: "Authentication Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      handleAuthError(error);
     }
+  }
+
+  async function handleGoogleSignIn() {
+    try {
+      await initiateGoogleSignIn(auth);
+      router.push("/");
+    } catch (error) {
+      handleAuthError(error);
+    }
+  }
+
+  function handleAuthError(error: any) {
+    let errorMessage = "An unexpected error occurred.";
+    if (error instanceof FirebaseError) {
+      switch (error.code) {
+        case "auth/user-not-found":
+        case "auth/wrong-password":
+        case "auth/invalid-credential":
+          errorMessage = "Invalid email or password.";
+          break;
+        case "auth/email-already-in-use":
+          errorMessage = "This email is already in use.";
+          break;
+        case "auth/popup-closed-by-user":
+          errorMessage = "Sign-in process was cancelled.";
+          break;
+        default:
+          errorMessage = error.message;
+          break;
+      }
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    toast({
+      title: "Authentication Failed",
+      description: errorMessage,
+      variant: "destructive",
+    });
   }
 
   return (
@@ -159,6 +186,23 @@ export function AuthForm({ type }: AuthFormProps) {
           </Button>
         </form>
       </Form>
+
+       <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-background px-2 text-muted-foreground">
+            Or continue with
+          </span>
+        </div>
+      </div>
+
+      <Button variant="outline" onClick={handleGoogleSignIn}>
+        <GoogleIcon />
+        Sign in with Google
+      </Button>
+
       <p className="px-8 text-center text-sm text-muted-foreground">
         <Link
           href={type === "login" ? "/signup" : "/login"}
