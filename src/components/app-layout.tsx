@@ -5,20 +5,7 @@ import { Button } from "./ui/button";
 import { useAuth, useUser } from "@/firebase";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useRouter } from "next/navigation";
-import {
-  SidebarProvider,
-  Sidebar,
-  SidebarHeader,
-  SidebarContent,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarFooter,
-  SidebarTrigger,
-  SidebarInset,
-} from "@/components/ui/sidebar";
-import { Calendar, Users, LogOut, LogIn } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { Users, LogOut, LogIn } from "lucide-react";
 
 type AppLayoutProps = {
   children: React.ReactNode;
@@ -28,7 +15,6 @@ export function AppLayout({ children }: AppLayoutProps) {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const router = useRouter();
-  const isMobile = useIsMobile();
 
   const handleLogout = () => {
     auth.signOut();
@@ -36,31 +22,12 @@ export function AppLayout({ children }: AppLayoutProps) {
   };
 
   return (
-    <SidebarProvider>
-      <Sidebar>
-        <SidebarHeader>
-            <span className="text-xl font-semibold font-headline p-2 group-data-[collapsible=icon]:hidden">SmileSlot</span>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link href="/">
-                  <Calendar />
-                  Appointments
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarContent>
-        <SidebarFooter />
-      </Sidebar>
-      <SidebarInset>
-        <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen">
         <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-card px-4 shadow-sm md:px-6 justify-between">
           <div className="flex items-center gap-4">
-            <SidebarTrigger />
-            <span className="text-xl font-semibold font-headline">SmileSlot</span>
+            <Link href="/" className="flex items-center gap-2">
+                <span className="text-xl font-semibold font-headline">SmileSlot</span>
+            </Link>
           </div>
           <Button asChild>
             <Link href="/patients">
@@ -100,8 +67,6 @@ export function AppLayout({ children }: AppLayoutProps) {
         <footer className="p-4 text-center text-xs text-muted-foreground">
             © 2024 SmileSlot. All rights reserved.
           </footer>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
   );
 }
