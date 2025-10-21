@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { useState, useMemo } from "react";
-import { addWeeks, subWeeks, startOfToday } from "date-fns";
-import type { Appointment, TimeSlot } from "@/lib/types";
-import { CalendarHeader } from "./calendar-header";
-import { WeeklyView } from "./weekly-view";
+import { useState, useMemo } from 'react';
+import { addWeeks, subWeeks, startOfToday } from 'date-fns';
+import type { Appointment, TimeSlot } from '@/lib/types';
+import { CalendarHeader } from './calendar-header';
+import { WeeklyView } from './weekly-view';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetDescription,
-} from "@/components/ui/sheet";
-import { AppointmentForm } from "./appointment-form";
-import { useToast } from "@/hooks/use-toast";
-import { Card } from "@/components/ui/card";
+} from '@/components/ui/sheet';
+import { AppointmentForm } from './appointment-form';
+import { useToast } from '@/hooks/use-toast';
+import { Card } from '@/components/ui/card';
 import {
   useCollection,
   useFirestore,
@@ -23,8 +23,8 @@ import {
   addDocumentNonBlocking,
   updateDocumentNonBlocking,
   deleteDocumentNonBlocking,
-} from "@/firebase";
-import { collection, doc } from "firebase/firestore";
+} from '@/firebase';
+import { collection, doc } from 'firebase/firestore';
 
 export function MainDashboard() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -38,7 +38,7 @@ export function MainDashboard() {
 
   const appointmentsCollectionRef = useMemoFirebase(() => {
     if (!user) return null;
-    return collection(firestore, "dentists", user.uid, "appointments");
+    return collection(firestore, 'dentists', user.uid, 'appointments');
   }, [firestore, user]);
 
   const { data: appointments, isLoading } =
@@ -51,35 +51,33 @@ export function MainDashboard() {
   };
 
   const handleSlotClick = (slot: TimeSlot) => {
-    if (!user) return router.push("/login");
     setSelectedAppointment(null);
     setSelectedSlot(slot);
     setIsSheetOpen(true);
   };
 
   const handleAppointmentClick = (appointment: Appointment) => {
-    if (!user) return router.push("/login");
     setSelectedAppointment(appointment);
     setSelectedSlot(null);
     setIsSheetOpen(true);
   };
 
-  const handleFormSubmit = (data: Omit<Appointment, "id">) => {
+  const handleFormSubmit = (data: Omit<Appointment, 'id'>) => {
     if (!appointmentsCollectionRef) return;
-  
+
     if (selectedAppointment) {
       // Edit existing appointment
       const docRef = doc(appointmentsCollectionRef, selectedAppointment.id);
       updateDocumentNonBlocking(docRef, data);
       toast({
-        title: "Appointment Updated",
+        title: 'Appointment Updated',
         description: `Appointment for ${data.clientName} has been successfully updated.`,
       });
     } else {
       // Create new appointment
       addDocumentNonBlocking(appointmentsCollectionRef, data);
       toast({
-        title: "Appointment Scheduled",
+        title: 'Appointment Scheduled',
         description: `Appointment for ${data.clientName} has been successfully scheduled.`,
       });
       // TODO: Implement actual SMS/WhatsApp notification
@@ -87,25 +85,27 @@ export function MainDashboard() {
     }
     setIsSheetOpen(false);
   };
-  
+
   const handleDeleteAppointment = () => {
     if (!appointmentsCollectionRef || !selectedAppointment) return;
     const docRef = doc(appointmentsCollectionRef, selectedAppointment.id);
     deleteDocumentNonBlocking(docRef);
     toast({
-      title: "Appointment Deleted",
-      description: "The appointment has been successfully deleted.",
-      variant: "destructive",
+      title: 'Appointment Deleted',
+      description: 'The appointment has been successfully deleted.',
+      variant: 'destructive',
     });
     setIsSheetOpen(false);
   };
 
   const appointmentsWithDates = useMemo(() => {
-    return appointments?.map(appt => ({
-      ...appt,
-      startTime: (appt.startTime as any).toDate(),
-      endTime: (appt.endTime as any).toDate(),
-    })) || [];
+    return (
+      appointments?.map((appt) => ({
+        ...appt,
+        startTime: (appt.startTime as any).toDate(),
+        endTime: (appt.endTime as any).toDate(),
+      })) || []
+    );
   }, [appointments]);
 
   return (
@@ -131,24 +131,22 @@ export function MainDashboard() {
         <SheetContent className="w-full max-w-md sm:max-w-lg overflow-y-auto">
           <SheetHeader className="px-6 pt-6">
             <SheetTitle className="font-headline">
-              {selectedAppointment ? "Edit Appointment" : "New Appointment"}
+              {selectedAppointment ? 'Edit Appointment' : 'New Appointment'}
             </SheetTitle>
             <SheetDescription>
               {selectedAppointment
-                ? "Update the details below."
-                : "Fill in the details to schedule a new appointment."}
+                ? 'Update the details below.'
+                : 'Fill in the details to schedule a new appointment.'}
             </SheetDescription>
           </SheetHeader>
           <div className="px-6 py-4">
             <AppointmentForm
-              key={selectedAppointment?.id || "new"}
+              key={selectedAppointment?.id || 'new'}
               appointment={selectedAppointment}
               slot={selectedSlot}
               onSubmit={handleFormSubmit}
               onDelete={
-                selectedAppointment
-                  ? handleDeleteAppointment
-                  : undefined
+                selectedAppointment ? handleDeleteAppointment : undefined
               }
               clientHistory="No previous appointments."
               appointmentNotes="Client reports sensitivity in the upper right quadrant."

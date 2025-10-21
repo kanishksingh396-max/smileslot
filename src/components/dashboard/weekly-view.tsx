@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
 import {
   eachDayOfInterval,
   endOfWeek,
@@ -16,11 +16,11 @@ import {
   isBefore,
   isToday,
   startOfDay,
-} from "date-fns";
-import type { Appointment, TimeSlot } from "@/lib/types";
-import { workingHours, appointmentDuration } from "@/lib/data";
-import { AppointmentCard } from "./appointment-card";
-import { cn } from "@/lib/utils";
+} from 'date-fns';
+import type { Appointment, TimeSlot } from '@/lib/types';
+import { workingHours, appointmentDuration } from '@/lib/data';
+import { AppointmentCard } from './appointment-card';
+import { cn } from '@/lib/utils';
 
 type WeeklyViewProps = {
   currentDate: Date;
@@ -62,23 +62,29 @@ export function WeeklyView({
     <div className="grid grid-cols-[auto_repeat(7,_1fr)] overflow-x-auto">
       <div className="col-start-1" />
       {week.map((day) => (
-        <div key={day.toString()} className="text-center py-2 border-b border-l">
-          <p className="text-sm text-muted-foreground">{format(day, "EEE")}</p>
+        <div
+          key={day.toString()}
+          className="text-center py-2 border-b border-l"
+        >
+          <p className="text-sm text-muted-foreground">{format(day, 'EEE')}</p>
           <p
             className={cn(
-              "text-2xl font-medium",
-              isToday(day) && "text-primary"
+              'text-2xl font-medium',
+              isToday(day) && 'text-primary'
             )}
           >
-            {format(day, "d")}
+            {format(day, 'd')}
           </p>
         </div>
       ))}
 
       {timeSlots.map((time, timeIndex) => (
         <React.Fragment key={time.toString()}>
-          <div className="row-start-[--row-start] pr-2 text-right text-xs text-muted-foreground -mt-2" style={{ '--row-start': timeIndex + 2 } as React.CSSProperties}>
-            {format(time, "p")}
+          <div
+            className="row-start-[--row-start] pr-2 text-right text-xs text-muted-foreground -mt-2"
+            style={{ '--row-start': timeIndex + 2 } as React.CSSProperties}
+          >
+            {format(time, 'p')}
           </div>
           {week.map((day, dayIndex) => {
             const slotStart = setMinutes(
@@ -116,10 +122,15 @@ export function WeeklyView({
                   ))
                 ) : (
                   <button
-                    onClick={() => onSlotClick({ startTime: slotStart, endTime: slotEnd })}
+                    onClick={() =>
+                      onSlotClick({ startTime: slotStart, endTime: slotEnd })
+                    }
                     disabled={isBefore(slotStart, new Date())}
                     className="absolute inset-0 w-full h-full hover:bg-primary/5 transition-colors disabled:bg-muted/50"
-                    aria-label={`Schedule appointment for ${format(day, 'MMMM do')} at ${format(time, 'p')}`}
+                    aria-label={`Schedule appointment for ${format(
+                      day,
+                      'MMMM do'
+                    )} at ${format(time, 'p')}`}
                   />
                 )}
               </div>
