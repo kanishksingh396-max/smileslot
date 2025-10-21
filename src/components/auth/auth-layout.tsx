@@ -28,9 +28,8 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         <div
           className="absolute inset-0 bg-cover"
           style={{
-            backgroundImage: "url(https://fastly.picsum.photos/id/89/4608/2592.jpg?hmac=G9E4z5RMJgMUjgTzeR4CFlORjvogsGtqFQozIRqugBk)",
+            backgroundImage: "url(https://images.unsplash.com/photo-1599399333932-132b132649b3?q=80&w=1974&auto=format&fit=crop)",
           }}
-          data-ai-hint="office building"
         />
         <div className="relative z-20 flex items-center text-lg font-medium">
             <Tooth className="h-6 w-6 mr-2" />
