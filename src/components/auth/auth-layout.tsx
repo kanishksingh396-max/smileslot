@@ -28,7 +28,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         <div
           className="absolute inset-0 bg-cover"
           style={{
-            backgroundImage: "url(https://images.unsplash.com/photo-1599399333932-132b132649b3?q=80&w=1974&auto=format&fit=crop)",
+            backgroundImage: "url(https://images.unsplash.com/photo-1629904853716-f0bc6421949d?q=80&w=1974&auto=format&fit=crop)",
           }}
         />
         <div className="relative z-20 flex items-center text-lg font-medium">
