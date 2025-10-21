@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/sheet';
 import { AppointmentForm } from './appointment-form';
 import { useToast } from '@/hooks/use-toast';
-import { Card } from '@/components/ui/card';
 import {
   useCollection,
   useFirestore,
@@ -25,6 +24,7 @@ import {
   deleteDocumentNonBlocking,
 } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
+import { Card } from '@/components/ui/card';
 
 export function MainDashboard() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -81,7 +81,7 @@ export function MainDashboard() {
         description: `Appointment for ${data.clientName} has been successfully scheduled.`,
       });
       // TODO: Implement actual SMS/WhatsApp notification
-      console.log(`Sending confirmation to ${data.clientPhone}...`);
+      console.log(`Sending SMS confirmation to ${data.clientPhone}...`);
     }
     setIsSheetOpen(false);
   };
