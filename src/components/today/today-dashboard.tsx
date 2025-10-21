@@ -1,26 +1,26 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
+import { useMemo } from 'react';
 import {
   useCollection,
   useFirestore,
   useUser,
   useMemoFirebase,
-} from "@/firebase";
-import { collection } from "firebase/firestore";
-import { format, isToday } from "date-fns";
-import type { Appointment } from "@/lib/types";
+} from '@/firebase';
+import { collection } from 'firebase/firestore';
+import { format, isToday } from 'date-fns';
+import type { Appointment } from '@/lib/types';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Skeleton } from "../ui/skeleton";
-import { Button } from "../ui/button";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+} from '@/components/ui/card';
+import { Skeleton } from '../ui/skeleton';
+import { Button } from '../ui/button';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 
 export function TodayDashboard() {
   const { user } = useUser();
@@ -28,7 +28,7 @@ export function TodayDashboard() {
 
   const appointmentsCollectionRef = useMemoFirebase(() => {
     if (!user) return null;
-    return collection(firestore, "dentists", user.uid, "appointments");
+    return collection(firestore, 'dentists', user.uid, 'appointments');
   }, [firestore, user]);
 
   const { data: appointments, isLoading } =
@@ -73,13 +73,18 @@ export function TodayDashboard() {
               ))
             ) : todaysAppointments.length > 0 ? (
               todaysAppointments.map((appt) => (
-                <div key={appt.id} className="p-4 grid grid-cols-3 items-center">
-                  <div className="col-span-1 font-medium">
-                    {format(appt.startTime, "p")} - {format(appt.endTime, "p")}
+                <div
+                  key={appt.id}
+                  className="p-4 grid grid-cols-2 items-center"
+                >
+                  <div className="font-medium">
+                    {format(appt.startTime, 'p')} - {format(appt.endTime, 'p')}
                   </div>
-                  <div className="col-span-2">
+                  <div className="text-right">
                     <p className="font-semibold">{appt.clientName}</p>
-                    <p className="text-sm text-muted-foreground">{appt.service}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {appt.clientPhone}
+                    </p>
                   </div>
                 </div>
               ))
