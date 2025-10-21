@@ -83,14 +83,6 @@ export function AppLayout({ children }: AppLayoutProps) {
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link href="/patients">
-                  <Users />
-                  Patients
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter />
@@ -98,9 +90,17 @@ export function AppLayout({ children }: AppLayoutProps) {
       <SidebarInset>
         <div className="flex flex-col min-h-screen">
         <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-card px-4 shadow-sm md:px-6 justify-between">
-          <SidebarTrigger />
+          <div className="flex items-center gap-4">
+            <SidebarTrigger />
+            <span className="text-xl font-semibold font-headline">SmileSlot</span>
+          </div>
           <div className="flex items-center gap-3">
-              <span className="text-xl font-semibold font-headline">SmileSlot</span>
+             <Button asChild variant="ghost">
+                <Link href="/patients">
+                  <Users className="mr-2 h-4 w-4" />
+                  Patients
+                </Link>
+              </Button>
             </div>
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6 lg:p-8">
