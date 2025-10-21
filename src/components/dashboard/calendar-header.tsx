@@ -2,14 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type CalendarHeaderProps = {
   currentDate: Date;
   onPrevWeek: () => void;
   onNextWeek: () => void;
   onToday: () => void;
-  onAddAppointment: () => void;
 };
 
 export function CalendarHeader({
@@ -17,7 +16,6 @@ export function CalendarHeader({
   onPrevWeek,
   onNextWeek,
   onToday,
-  onAddAppointment,
 }: CalendarHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -36,12 +34,6 @@ export function CalendarHeader({
             <ChevronRight className="w-4 h-4" />
           </Button>
         </div>
-      </div>
-      <div className="flex items-center gap-4">
-        <Button onClick={onAddAppointment} size="icon" className="bg-accent text-accent-foreground hover:bg-accent/90">
-          <Plus className="h-4 w-4" />
-          <span className="sr-only">Add Appointment</span>
-        </Button>
       </div>
     </div>
   );

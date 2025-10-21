@@ -25,6 +25,8 @@ import {
 } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
 import { Card } from '@/components/ui/card';
+import { Button } from '../ui/button';
+import { Plus } from 'lucide-react';
 
 export function MainDashboard() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -166,7 +168,6 @@ export function MainDashboard() {
         onPrevWeek={() => setCurrentDate(subWeeks(currentDate, 1))}
         onNextWeek={() => setCurrentDate(addWeeks(currentDate, 1))}
         onToday={() => setCurrentDate(startOfToday())}
-        onAddAppointment={handleAddAppointment}
       />
 
       <Card className="shadow-sm">
@@ -207,6 +208,14 @@ export function MainDashboard() {
           </div>
         </SheetContent>
       </Sheet>
+
+      <Button
+        onClick={handleAddAppointment}
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-accent text-accent-foreground shadow-lg hover:bg-accent/90"
+      >
+        <Plus className="h-6 w-6" />
+        <span className="sr-only">Add Appointment</span>
+      </Button>
     </div>
   );
 }
