@@ -26,6 +26,7 @@ import {
   SidebarInset,
 } from "@/components/ui/sidebar";
 import { Calendar, Users, LogOut, LogIn } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type AppLayoutProps = {
   children: React.ReactNode;
@@ -35,6 +36,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const router = useRouter();
+  const isMobile = useIsMobile();
 
   const handleLogout = () => {
     auth.signOut();
