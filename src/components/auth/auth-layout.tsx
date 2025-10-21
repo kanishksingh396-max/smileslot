@@ -28,7 +28,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         <div
           className="absolute inset-0 bg-cover"
           style={{
-            backgroundImage: "url(https://picsum.photos/seed/picsum/1200/1800)",
+            backgroundImage: "url(https://fastly.picsum.photos/id/89/4608/2592.jpg?hmac=G9E4z5RMJgMUjgTzeR4CFlORjvogsGtqFQozIRqugBk)",
           }}
           data-ai-hint="office building"
         />
