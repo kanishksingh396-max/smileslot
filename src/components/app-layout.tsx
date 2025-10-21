@@ -13,6 +13,19 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { useRouter } from "next/navigation";
+import {
+  SidebarProvider,
+  Sidebar,
+  SidebarHeader,
+  SidebarContent,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarFooter,
+  SidebarTrigger,
+  SidebarInset,
+} from "@/components/ui/sidebar";
+import { Calendar, Users, LogOut, LogIn } from "lucide-react";
 
 const Tooth = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -44,66 +57,75 @@ export function AppLayout({ children }: AppLayoutProps) {
     auth.signOut();
     router.push("/login");
   };
-  
+
   return (
-    <div className="flex min-h-screen w-full flex-col bg-background">
-      <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-card px-4 shadow-sm md:px-6 justify-between">
-        <div className="flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-3">
+    <SidebarProvider>
+      <Sidebar>
+        <SidebarHeader>
+          <div className="flex items-center gap-3 p-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Tooth className="h-5 w-5" />
             </div>
             <span className="text-xl font-semibold font-headline">SmileSlot</span>
-          </Link>
-        </div>
-        <div className="flex items-center gap-4">
-          <nav className="flex items-center gap-4">
-            {user && (
-              <>
-                <Button variant="ghost" asChild>
-                  <Link href="/">Appointments</Link>
-                </Button>
-                <Button variant="ghost" asChild>
-                  <Link href="/patients">Patients</Link>
-                </Button>
-              </>
-            )}
-          </nav>
+          </div>
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link href="/">
+                  <Calendar />
+                  Appointments
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link href="/patients">
+                  <Users />
+                  Patients
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarContent>
+        <SidebarFooter>
           {isUserLoading ? null : user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={user.photoURL ?? ""} alt={user.displayName ?? ""} />
-                    <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{user.displayName}</p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      {user.email}
-                    </p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout}>
-                  Log out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex items-center gap-3 p-2">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={user.photoURL ?? ""} alt={user.displayName ?? ""} />
+                <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col space-y-1 grow">
+                <p className="text-sm font-medium leading-none truncate">{user.displayName ?? user.email}</p>
+              </div>
+              <Button variant="ghost" size="icon" onClick={handleLogout}>
+                <LogOut />
+              </Button>
+            </div>
           ) : (
-            <Button asChild>
-              <Link href="/login">Log In</Link>
-            </Button>
+             <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/login">
+                    <LogIn />
+                    Log In
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
           )}
-        </div>
-      </header>
-      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6 lg:p-8">
-        {children}
-      </main>
-    </div>
+        </SidebarFooter>
+      </Sidebar>
+      <SidebarInset>
+        <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-card px-4 shadow-sm md:px-6 justify-between">
+          <SidebarTrigger />
+          <h1 className="text-lg font-semibold md:text-2xl"></h1>
+        </header>
+        <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6 lg:p-8">
+          {children}
+        </main>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
