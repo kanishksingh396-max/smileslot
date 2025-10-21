@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type CalendarHeaderProps = {
   currentDate: Date;
@@ -39,17 +38,6 @@ export function CalendarHeader({
         </div>
       </div>
       <div className="flex items-center gap-4">
-        <Tabs defaultValue="week">
-          <TabsList>
-            <TabsTrigger value="day" disabled>
-              Day
-            </TabsTrigger>
-            <TabsTrigger value="week">Week</TabsTrigger>
-            <TabsTrigger value="month" disabled>
-              Month
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
         <Button onClick={onAddAppointment} className="bg-accent text-accent-foreground hover:bg-accent/90">
           <Plus className="mr-2 h-4 w-4" /> Add Appointment
         </Button>
