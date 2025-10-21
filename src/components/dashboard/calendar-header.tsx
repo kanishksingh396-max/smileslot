@@ -2,7 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Users } from "lucide-react";
+import Link from "next/link";
 
 type CalendarHeaderProps = {
   currentDate: Date;
@@ -34,6 +35,14 @@ export function CalendarHeader({
             <ChevronRight className="w-4 h-4" />
           </Button>
         </div>
+      </div>
+      <div className="flex items-center gap-3">
+        <Button asChild>
+          <Link href="/patients">
+            <Users className="mr-2 h-4 w-4" />
+            Patients
+          </Link>
+        </Button>
       </div>
     </div>
   );
