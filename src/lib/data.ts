@@ -5,7 +5,7 @@ const today = startOfToday();
 
 export const mockAppointments: Appointment[] = [];
 
-export const mockClients: Patient[] = [
+export const mockPatients: Patient[] = [
     {
       id: "1",
       name: "John Doe",
