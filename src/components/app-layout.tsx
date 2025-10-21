@@ -36,7 +36,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
         <div className="mt-auto p-4 flex justify-center">
             {isUserLoading ? null : user ? (
-              <div className="flex items-center gap-3 p-2 border rounded-full">
+              <div className="flex items-center gap-3 p-2 rounded-full bg-primary text-primary-foreground">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={user.photoURL ?? ""} alt={user.displayName ?? ""} />
                   <AvatarFallback>{user.displayName?.[0].toUpperCase()}</AvatarFallback>
@@ -44,7 +44,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <div className="flex flex-col space-y-1 grow">
                   <p className="text-sm font-medium leading-none truncate">{user.displayName}</p>
                 </div>
-                <Button variant="ghost" size="icon" onClick={handleLogout}>
+                <Button variant="ghost" size="icon" onClick={handleLogout} className="hover:bg-primary/90 hover:text-primary-foreground">
                   <LogOut />
                 </Button>
               </div>
