@@ -56,19 +56,19 @@ export function AppLayout({ children }: AppLayoutProps) {
             <span className="text-xl font-semibold font-headline">DentalFlow</span>
           </Link>
         </div>
-        <nav className="flex items-center gap-4">
-          {user && (
-            <>
-              <Button variant="ghost" asChild>
-                <Link href="/">Appointments</Link>
-              </Button>
-              <Button variant="ghost" asChild>
-                <Link href="/patients">Patients</Link>
-              </Button>
-            </>
-          )}
-        </nav>
         <div className="flex items-center gap-4">
+          <nav className="flex items-center gap-4">
+            {user && (
+              <>
+                <Button variant="ghost" asChild>
+                  <Link href="/">Appointments</Link>
+                </Button>
+                <Button variant="ghost" asChild>
+                  <Link href="/patients">Patients</Link>
+                </Button>
+              </>
+            )}
+          </nav>
           {isUserLoading ? null : user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
