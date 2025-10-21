@@ -33,7 +33,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         />
         <div className="relative z-20 flex items-center text-lg font-medium">
             <Tooth className="h-6 w-6 mr-2" />
-          SmileSlot
+          SmileSLot
         </div>
         <div className="relative z-20 mt-auto">
           <blockquote className="space-y-2">

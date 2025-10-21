@@ -26,7 +26,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         <header className="flex h-16 items-center gap-4 border-b bg-card px-4 shadow-sm md:px-6 justify-between">
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-2">
-                <span className="text-2xl font-semibold font-headline">SmileSlot</span>
+                <span className="text-2xl font-semibold font-headline">SmileSLot</span>
             </Link>
           </div>
         </header>
@@ -59,7 +59,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         </div>
 
         <footer className="p-4 text-center text-xs text-muted-foreground">
-            © 2024 SmileSlot. All rights reserved.
+            © 2024 SmileSLot. All rights reserved.
           </footer>
       </div>
   );
