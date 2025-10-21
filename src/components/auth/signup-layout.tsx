@@ -28,9 +28,9 @@ export function SignupLayout({ children }: SignupLayoutProps) {
         <div
           className="absolute inset-0 bg-cover"
           style={{
-            backgroundImage: "url(https://picsum.photos/1200/1800?grayscale)",
+            backgroundImage: "url(https://fastly.picsum.photos/id/38/1280/960.jpg?hmac=HBrgyJHQOGVicaWoXgvdSfTakkAyv4BxAt4rF0DhWkU)",
           }}
-          data-ai-hint="abstract texture"
+          data-ai-hint="road landscape"
         />
         <div className="relative z-20 flex items-center text-lg font-medium">
             <Tooth className="h-6 w-6 mr-2" />
