@@ -54,7 +54,7 @@ export function MessagesDashboard() {
         </Button>
       </div>
 
-      <div className="space-y-6">
+      <div className="flex flex-col space-y-4">
         {isLoading ? (
           Array.from({ length: 6 }).map((_, i) => (
             <Card key={i} className="flex flex-col p-4 space-y-4">
