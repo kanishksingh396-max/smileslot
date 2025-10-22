@@ -1,8 +1,13 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { addWeeks, subWeeks, startOfToday } from 'date-fns';
-import type { Appointment, TimeSlot, Patient } from '@/lib/types';
+import { addWeeks, subWeeks, startOfToday, format } from 'date-fns';
+import type {
+  Appointment,
+  TimeSlot,
+  Patient,
+  ConfirmationMessage,
+} from '@/lib/types';
 import { CalendarHeader } from './calendar-header';
 import { WeeklyView } from './weekly-view';
 import {
@@ -35,6 +40,7 @@ export function MainDashboard() {
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
+  const [messages, setMessages] = useState<ConfirmationMessage[]>([]);
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
@@ -76,10 +82,14 @@ export function MainDashboard() {
     setIsSheetOpen(true);
   };
 
-  const handleFormSubmit = (data: Omit<Appointment, 'id' | 'clientName' | 'clientPhone'> & {patientId: string}) => {
+  const handleFormSubmit = (
+    data: Omit<Appointment, 'id' | 'clientName' | 'clientPhone'> & {
+      patientId: string;
+    }
+  ) => {
     if (!appointmentsCollectionRef) return;
-    
-    const patient = patients?.find(p => p.id === data.patientId);
+
+    const patient = patients?.find((p) => p.id === data.patientId);
     if (!patient) {
       toast({
         title: 'Error',
@@ -95,7 +105,6 @@ export function MainDashboard() {
       clientPhone: patient.phone,
     };
 
-
     if (selectedAppointment) {
       // Edit existing appointment
       const docRef = doc(appointmentsCollectionRef, selectedAppointment.id);
@@ -107,12 +116,22 @@ export function MainDashboard() {
     } else {
       // Create new appointment
       addDocumentNonBlocking(appointmentsCollectionRef, appointmentData);
+      const newMessage: ConfirmationMessage = {
+        id: new Date().toISOString(),
+        patientName: patient.name,
+        patientPhone: patient.phone,
+        appointmentDate: format(appointmentData.startTime, 'PPP'),
+        appointmentTime: format(appointmentData.startTime, 'p'),
+      };
+      setMessages((prev) => [newMessage, ...prev]);
       toast({
         title: 'Appointment Scheduled',
         description: `Appointment for ${appointmentData.clientName} has been successfully scheduled.`,
       });
       // TODO: Implement actual SMS/WhatsApp notification
-      console.log(`Sending SMS confirmation to ${appointmentData.clientPhone}...`);
+      console.log(
+        `Sending SMS confirmation to ${appointmentData.clientPhone}...`
+      );
     }
     setIsSheetOpen(false);
   };
@@ -129,14 +148,19 @@ export function MainDashboard() {
     setIsSheetOpen(false);
   };
 
-    const handleAddPatient = async (patientData: Omit<Patient, 'id' | 'lastVisit' | 'totalAppointments' | 'email'>) => {
+  const handleAddPatient = async (
+    patientData: Omit<
+      Patient,
+      'id' | 'lastVisit' | 'totalAppointments' | 'email'
+    >
+  ) => {
     if (!patientsCollectionRef) return;
-    
+
     const newPatientData = {
       ...patientData,
       lastVisit: new Date(),
       totalAppointments: 0,
-    }
+    };
 
     try {
       // We use addDoc here to get the doc reference with ID back
@@ -147,7 +171,7 @@ export function MainDashboard() {
       });
       return { ...newPatientData, id: docRef.id } as Patient;
     } catch (error) {
-       toast({
+      toast({
         title: 'Error adding patient',
         description: 'An unexpected error occurred.',
         variant: 'destructive',
@@ -155,7 +179,6 @@ export function MainDashboard() {
       return undefined;
     }
   };
-
 
   const appointmentsWithDates = useMemo(() => {
     return (
@@ -166,11 +189,10 @@ export function MainDashboard() {
       })) || []
     );
   }, [appointments]);
-  
+
   if (!currentDate) {
     return null; // Or a loading spinner
   }
-
 
   return (
     <div className="space-y-6">
@@ -180,6 +202,7 @@ export function MainDashboard() {
         onNextWeek={() => setCurrentDate(addWeeks(currentDate, 1))}
         onToday={() => setCurrentDate(startOfToday())}
         appointments={appointmentsWithDates}
+        messages={messages}
       />
 
       <Card className="shadow-sm">
