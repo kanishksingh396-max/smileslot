@@ -28,10 +28,15 @@ export function MessageCard({
   return (
     <Card className="flex flex-col">
       <CardHeader>
-        <CardTitle className="text-base">{appointment.clientName}</CardTitle>
-        <CardDescription>
-          {format(appointment.startTime, 'PPP')} at {format(appointment.startTime, 'p')}
-        </CardDescription>
+        <div className="flex justify-between items-start">
+            <div>
+                <CardTitle className="text-base">{appointment.clientName}</CardTitle>
+                <CardDescription>
+                {format(appointment.startTime, 'PPP')} at {format(appointment.startTime, 'p')}
+                </CardDescription>
+            </div>
+            <div className="text-sm text-muted-foreground">{appointment.clientPhone}</div>
+        </div>
       </CardHeader>
       <CardContent className="flex-grow">
         <Textarea
