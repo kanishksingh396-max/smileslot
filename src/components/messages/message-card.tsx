@@ -14,13 +14,13 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Send } from 'lucide-react';
+import { sendAppointmentSMS } from '@/ai/utils/smsService.js';
 
 type MessageCardProps = {
   appointment: Appointment;
   dentistName: string;
   dentistPhone: string;
   onUpdate: (appointmentId: string, newMessageBody: string) => void;
-  onSend: (phone: string, message: string) => void;
 };
 
 export function MessageCard({
@@ -28,7 +28,6 @@ export function MessageCard({
   dentistName,
   dentistPhone,
   onUpdate,
-  onSend,
 }: MessageCardProps) {
   const initialMessage = `Hi ${appointment.clientName}, this is a reminder for your appointment at ${dentistName} on ${format(appointment.startTime, 'PPP')} at ${format(appointment.startTime, 'p')}. Please call ${dentistPhone} to reschedule. We look forward to seeing you!`;
 
@@ -39,6 +38,10 @@ export function MessageCard({
     onUpdate(appointment.id, messageBody);
     setIsEditing(false);
   };
+  
+  const handleSend = async () => {
+    await sendAppointmentSMS(appointment.clientPhone, messageBody);
+  }
 
   return (
     <Card className="flex flex-col">
@@ -64,7 +67,7 @@ export function MessageCard({
             Save
           </Button>
         )}
-        <Button onClick={() => onSend(appointment.clientPhone, messageBody)}>
+        <Button onClick={handleSend}>
           <Send className="mr-2 h-4 w-4" />
           Send
         </Button>

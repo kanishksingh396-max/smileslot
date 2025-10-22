@@ -17,6 +17,7 @@ import Link from 'next/link';
 import { MessageCard } from './message-card';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '../ui/skeleton';
+import { Card } from '../ui/card';
 
 export function MessagesDashboard() {
   const { user } = useUser();
@@ -79,10 +80,10 @@ export function MessagesDashboard() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {isLoading ? (
           Array.from({ length: 6 }).map((_, i) => (
-            <Card key={i} className="p-4 space-y-4">
+            <Card key={i} className="flex flex-col p-4 space-y-4">
               <Skeleton className="h-5 w-3/4" />
               <Skeleton className="h-4 w-1/2" />
-              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-20 w-full flex-grow" />
               <div className="flex justify-end">
                 <Skeleton className="h-9 w-20" />
               </div>
