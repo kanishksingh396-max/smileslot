@@ -1,28 +1,24 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import {
   useCollection,
   useFirestore,
   useUser,
   useMemoFirebase,
-  updateDocumentNonBlocking,
 } from '@/firebase';
-import { collection, doc } from 'firebase/firestore';
+import { collection } from 'firebase/firestore';
 import type { Appointment } from '@/lib/types';
-import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { MessageCard } from './message-card';
-import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '../ui/skeleton';
 import { Card } from '../ui/card';
 
 export function MessagesDashboard() {
   const { user } = useUser();
   const firestore = useFirestore();
-  const { toast } = useToast();
 
   const appointmentsCollectionRef = useMemoFirebase(() => {
     if (!user) return null;
@@ -43,25 +39,6 @@ export function MessagesDashboard() {
     );
   }, [appointments]);
 
-  const handleUpdateMessage = (appointmentId: string, newBody: string) => {
-    // This is a placeholder for where you might save the updated message.
-    // Since the message isn't stored on the appointment, we can't directly update it.
-    // For now, we will just show a toast.
-    console.log(`Updating message for appointment ${appointmentId}:`, newBody);
-    toast({
-      title: 'Message Updated',
-      description: 'The reminder message has been saved.',
-    });
-  };
-
-  const handleSendMessage = (phone: string, message: string) => {
-    // This is where you would integrate with an SMS service.
-    console.log(`Sending SMS to ${phone}: ${message}`);
-    toast({
-      title: 'Message Sent',
-      description: `The reminder has been sent to ${phone}.`,
-    });
-  };
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
@@ -96,8 +73,6 @@ export function MessagesDashboard() {
               appointment={appt}
               dentistName={user?.displayName || 'Your Clinic'}
               dentistPhone={user?.phoneNumber || 'your contact number'}
-              onUpdate={handleUpdateMessage}
-              onSend={handleSendMessage}
             />
           ))
         ) : (
