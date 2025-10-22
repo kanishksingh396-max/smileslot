@@ -67,7 +67,7 @@ export function NotificationsPanel({ appointments }: NotificationsPanelProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button size="icon" className="relative bg-primary text-primary-foreground hover:bg-primary/90">
+        <Button variant="outline" size="icon" className="relative">
           <Bell className="h-5 w-5" />
           {hasNotifications && (
              <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 justify-center p-0">{upcomingAppointments.length}</Badge>
