@@ -14,6 +14,7 @@ import type { Appointment, TimeSlot, Patient } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { sendAppointmentSMS } from '@/ai/utils/smsService.js';
 import {
   Form,
   FormControl,
@@ -138,12 +139,35 @@ export function AppointmentForm({
     return options;
   }, []);
 
-  function handleFormSubmit(values: z.infer<typeof formSchema>) {
+async function handleFormSubmit(values: z.infer<typeof formSchema>) {
     const [hours, minutes] = values.time.split(':').map(Number);
     const startTime = setMinutes(setHours(values.date, hours), minutes);
     const endTime = addMinutes(startTime, appointmentDuration);
+    
+    try {
+        const patient = patients.find(p => p.id === values.patientId);
+        
+        if (patient && patient.phone) {
+            const formattedTime = format(startTime, 'eeee, MMM do \'at\' p'); 
+            
+            const messageBody = `Confirmed, ${patient.name}! Your ${values.service} appointment is scheduled for ${formattedTime}. We look forward to seeing you.`;
+
+            const result = await sendAppointmentSMS(patient.phone, messageBody);
+
+            if (result.success) {
+                console.log("SMS initiated successfully via Apps Script for:", patient.name);
+            } else {
+                console.error("SMS failed to send. Check the Apps Script logs.", result.error);
+            }
+        } else {
+            console.warn("SMS skipped: Patient not found or phone number is missing.");
+        }
+    } catch (error) {
+        console.error("Fatal error during SMS submission:", error);
+    }
+    
     onSubmit({ ...values, startTime, endTime });
-  }
+}
 
   async function handleAddPatient(data: Omit<Patient, 'id'| 'lastVisit' | 'totalAppointments' | 'email'>) {
     const newPatient = await onAddPatient(data);
@@ -267,7 +291,7 @@ export function AppointmentForm({
             </FormItem>
           )}
         />
-       
+        
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
