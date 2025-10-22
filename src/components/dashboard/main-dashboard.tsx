@@ -26,7 +26,7 @@ import {
 import { collection, doc, addDoc } from 'firebase/firestore';
 import { Card } from '@/components/ui/card';
 import { Button } from '../ui/button';
-import { Plus, Menu } from 'lucide-react';
+import { Plus, Menu, Users } from 'lucide-react';
 import Link from 'next/link';
 
 export function MainDashboard() {
@@ -228,6 +228,16 @@ export function MainDashboard() {
         <Link href="/today">
           <Menu className="h-6 w-6" />
           <span className="sr-only">Today's Appointments</span>
+        </Link>
+      </Button>
+
+      <Button
+        asChild
+        className="fixed bottom-24 right-6 h-14 w-14 rounded-full bg-accent text-accent-foreground shadow-lg hover:bg-accent/90"
+      >
+        <Link href="/patients">
+          <Users className="h-6 w-6" />
+          <span className="sr-only">Patients</span>
         </Link>
       </Button>
 

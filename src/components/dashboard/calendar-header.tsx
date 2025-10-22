@@ -42,12 +42,6 @@ export function CalendarHeader({
       </div>
       <div className="flex items-center gap-3">
         <NotificationsPanel appointments={appointments} />
-        <Button asChild>
-          <Link href="/patients">
-            <Users className="mr-2 h-4 w-4" />
-            Patients
-          </Link>
-        </Button>
       </div>
     </div>
   );
