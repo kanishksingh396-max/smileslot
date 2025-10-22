@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { MessageSquare, Phone, Calendar, Clock } from 'lucide-react';
 import { Badge } from '../ui/badge';
+import Link from 'next/link';
 
 type MessagesPanelProps = {
   messages: ConfirmationMessage[];
@@ -38,10 +39,10 @@ export function MessagesPanel({ messages }: MessagesPanelProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-80">
-        <DropdownMenuLabel>Appointment Confirmations</DropdownMenuLabel>
+        <DropdownMenuLabel>Recent Confirmation Messages</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {hasMessages ? (
-          messages.map((msg) => (
+          messages.slice(0, 3).map((msg) => (
             <DropdownMenuItem
               key={msg.id}
               className="flex flex-col items-start gap-1.5"
@@ -53,12 +54,9 @@ export function MessagesPanel({ messages }: MessagesPanelProps) {
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Calendar className="h-3 w-3" />
-                <span>{msg.appointmentDate}</span>
+                <span>{msg.appointmentDate} at {msg.appointmentTime}</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Clock className="h-3 w-3" />
-                <span>{msg.appointmentTime}</span>
-              </div>
+              <p className="text-xs text-muted-foreground truncate">{msg.messageBody}</p>
             </DropdownMenuItem>
           ))
         ) : (
@@ -66,6 +64,12 @@ export function MessagesPanel({ messages }: MessagesPanelProps) {
             No new appointment confirmations.
           </div>
         )}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+            <Link href="/messages" className='cursor-pointer justify-center'>
+                View All Messages
+            </Link>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -25,8 +25,10 @@ export type Patient = {
 
 export type ConfirmationMessage = {
   id: string;
+  appointmentId: string;
   patientName: string;
   patientPhone: string;
   appointmentDate: string;
   appointmentTime: string;
+  messageBody: string;
 };

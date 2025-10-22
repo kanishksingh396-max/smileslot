@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
-import { ChevronLeft, ChevronRight, Users, Bell } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Users, Bell, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { NotificationsPanel } from './notifications-panel';
 import type { Appointment, ConfirmationMessage } from '@/lib/types';
@@ -61,7 +61,12 @@ export function CalendarHeader({
         </div>
       </div>
       <div className="flex items-center gap-3">
-        <MessagesPanel messages={messages} />
+        <Button asChild variant="outline" size="icon">
+            <Link href="/messages">
+                <MessageSquare className="h-5 w-5" />
+                <span className="sr-only">Messages</span>
+            </Link>
+        </Button>
         <NotificationsPanel appointments={appointments} />
       </div>
     </div>

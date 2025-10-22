@@ -63,7 +63,7 @@ export function MainDashboard() {
     useCollection<Appointment>(appointmentsCollectionRef);
   const { data: patients, isLoading: patientsLoading } =
     useCollection<Patient>(patientsCollectionRef);
-
+    
   const handleAddAppointment = () => {
     setSelectedAppointment(null);
     setSelectedSlot(null);
@@ -87,7 +87,7 @@ export function MainDashboard() {
       patientId: string;
     }
   ) => {
-    if (!appointmentsCollectionRef) return;
+    if (!appointmentsCollectionRef || !user) return;
 
     const patient = patients?.find((p) => p.id === data.patientId);
     if (!patient) {
@@ -105,39 +105,47 @@ export function MainDashboard() {
       clientPhone: patient.phone,
     };
 
+    const handleSuccess = (appointmentId: string) => {
+        const dentistPhoneNumber = user.phoneNumber || "your dental office";
+        const clinicName = user.displayName || "our clinic";
+        const messageBody = `Hi ${patient.name}, this is a reminder for your appointment at ${clinicName} on ${format(appointmentData.startTime, "PPP")} at ${format(appointmentData.startTime, "p")}. Please call ${dentistPhoneNumber} to reschedule. We look forward to seeing you!`;
+    
+        const newMessage: ConfirmationMessage = {
+          id: new Date().toISOString(),
+          appointmentId: appointmentId,
+          patientName: patient.name,
+          patientPhone: patient.phone,
+          appointmentDate: format(appointmentData.startTime, 'PPP'),
+          appointmentTime: format(appointmentData.startTime, 'p'),
+          messageBody: messageBody,
+        };
+        setMessages((prev) => [newMessage, ...prev]);
+
+        toast({
+            title: selectedAppointment ? 'Appointment Updated' : 'Appointment Scheduled',
+            description: `Appointment for ${appointmentData.clientName} has been successfully ${selectedAppointment ? 'updated' : 'scheduled'}.`,
+        });
+    }
+
     if (selectedAppointment) {
       // Edit existing appointment
       const docRef = doc(appointmentsCollectionRef, selectedAppointment.id);
       updateDocumentNonBlocking(docRef, appointmentData);
-      toast({
-        title: 'Appointment Updated',
-        description: `Appointment for ${appointmentData.clientName} has been successfully updated.`,
-      });
+      handleSuccess(selectedAppointment.id);
+      
     } else {
       // Create new appointment
-      addDocumentNonBlocking(appointmentsCollectionRef, appointmentData);
-      const newMessage: ConfirmationMessage = {
-        id: new Date().toISOString(),
-        patientName: patient.name,
-        patientPhone: patient.phone,
-        appointmentDate: format(appointmentData.startTime, 'PPP'),
-        appointmentTime: format(appointmentData.startTime, 'p'),
-      };
-      setMessages((prev) => [newMessage, ...prev]);
-      toast({
-        title: 'Appointment Scheduled',
-        description: `Appointment for ${appointmentData.clientName} has been successfully scheduled.`,
+      addDocumentNonBlocking(appointmentsCollectionRef, appointmentData).then(docRef => {
+        if (docRef) {
+            handleSuccess(docRef.id);
+        }
       });
-      // TODO: Implement actual SMS/WhatsApp notification
-      console.log(
-        `Sending SMS confirmation to ${appointmentData.clientPhone}...`
-      );
     }
     setIsSheetOpen(false);
   };
 
   const handleDeleteAppointment = () => {
-    if (!appointmentsCollectionRef || !selectedAppointment) return;
+    if (!appointmentsCollectionref || !selectedAppointment) return;
     const docRef = doc(appointmentsCollectionRef, selectedAppointment.id);
     deleteDocumentNonBlocking(docRef);
     toast({
