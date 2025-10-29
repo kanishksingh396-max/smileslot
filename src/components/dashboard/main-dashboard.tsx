@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { addWeeks, subWeeks, startOfToday, format } from 'date-fns';
+import { addDays, subDays, startOfToday, format } from 'date-fns';
 import type {
   Appointment,
   TimeSlot,
   Patient,
   ConfirmationMessage,
 } from '@/lib/types';
-import { WeeklyView } from './weekly-view';
+import { DailyView } from './daily-view';
 import {
   Sheet,
   SheetContent,
@@ -176,7 +176,7 @@ export function MainDashboard({ appointments, currentDate }: MainDashboardProps)
   return (
     <div className="space-y-6">
       <Card className="shadow-sm">
-        <WeeklyView
+        <DailyView
           currentDate={currentDate}
           appointments={appointments}
           onSlotClick={handleSlotClick}

@@ -11,7 +11,7 @@ import {
 } from '@/firebase';
 import type { Appointment } from '@/lib/types';
 import { collection } from 'firebase/firestore';
-import { addWeeks, subWeeks, startOfToday } from 'date-fns';
+import { addDays, subDays, startOfToday } from 'date-fns';
 
 export default function Home() {
   const { user } = useUser();
@@ -40,15 +40,15 @@ export default function Home() {
     );
   }, [appointments]);
 
-  const handlePrevWeek = () => {
+  const handlePrevDay = () => {
     if (currentDate) {
-      setCurrentDate(subWeeks(currentDate, 1));
+      setCurrentDate(subDays(currentDate, 1));
     }
   };
 
-  const handleNextWeek = () => {
+  const handleNextDay = () => {
     if (currentDate) {
-      setCurrentDate(addWeeks(currentDate, 1));
+      setCurrentDate(addDays(currentDate, 1));
     }
   };
 
@@ -64,8 +64,8 @@ export default function Home() {
     <AppLayout 
       appointments={appointmentsWithDates}
       currentDate={currentDate}
-      onPrevWeek={handlePrevWeek}
-      onNextWeek={handleNextWeek}
+      onPrevDay={handlePrevDay}
+      onNextDay={handleNextDay}
       onToday={handleToday}
     >
       <MainDashboard appointments={appointmentsWithDates} currentDate={currentDate} />

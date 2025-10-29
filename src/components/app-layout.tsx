@@ -17,12 +17,12 @@ type AppLayoutProps = {
   appointments?: Appointment[];
   messages?: ConfirmationMessage[];
   currentDate?: Date;
-  onPrevWeek?: () => void;
-  onNextWeek?: () => void;
+  onPrevDay?: () => void;
+  onNextDay?: () => void;
   onToday?: () => void;
 };
 
-export function AppLayout({ children, appointments = [], messages = [], currentDate, onPrevWeek, onNextWeek, onToday }: AppLayoutProps) {
+export function AppLayout({ children, appointments = [], messages = [], currentDate, onPrevDay, onNextDay, onToday }: AppLayoutProps) {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const router = useRouter();
@@ -41,14 +41,14 @@ export function AppLayout({ children, appointments = [], messages = [], currentD
             </Link>
           </div>
           <div className="flex items-center gap-3">
-              {currentDate && onPrevWeek && onNextWeek && onToday && (
+              {currentDate && onPrevDay && onNextDay && onToday && (
                  <div className="flex items-center gap-1 rounded-md border p-0.5">
                     <Button
                         variant="ghost"
                         size="sm"
                         className="w-8 h-8 p-0"
-                        onClick={onPrevWeek}
-                        aria-label="Previous week"
+                        onClick={onPrevDay}
+                        aria-label="Previous day"
                     >
                         <ChevronLeft className="w-4 h-4" />
                     </Button>
@@ -58,14 +58,14 @@ export function AppLayout({ children, appointments = [], messages = [], currentD
                         className="px-3 h-8"
                         onClick={onToday}
                     >
-                        {format(currentDate, 'MMMM')}
+                        {format(currentDate, 'MMMM d')}
                     </Button>
                     <Button
                         variant="ghost"
                         size="sm"
                         className="w-8 h-8 p-0"
-                        onClick={onNextWeek}
-                        aria-label="Next week"
+                        onClick={onNextDay}
+                        aria-label="Next day"
                     >
                         <ChevronRight className="w-4 h-4" />
                     </Button>
