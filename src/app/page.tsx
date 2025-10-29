@@ -56,6 +56,12 @@ export default function Home() {
     setCurrentDate(startOfToday());
   };
 
+  const handleDateSelect = (date?: Date) => {
+    if (date) {
+      setCurrentDate(date);
+    }
+  };
+
   if (!currentDate) {
     return null; // Or a loading spinner
   }
@@ -67,6 +73,7 @@ export default function Home() {
       onPrevDay={handlePrevDay}
       onNextDay={handleNextDay}
       onToday={handleToday}
+      onDateSelect={handleDateSelect}
     >
       <MainDashboard appointments={appointmentsWithDates} currentDate={currentDate} />
     </AppLayout>

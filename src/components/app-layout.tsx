@@ -20,9 +20,10 @@ type AppLayoutProps = {
   onPrevDay?: () => void;
   onNextDay?: () => void;
   onToday?: () => void;
+  onDateSelect?: (date?: Date) => void;
 };
 
-export function AppLayout({ children, appointments = [], messages = [], currentDate, onPrevDay, onNextDay, onToday }: AppLayoutProps) {
+export function AppLayout({ children, appointments = [], messages = [], currentDate, onPrevDay, onNextDay, onToday, onDateSelect }: AppLayoutProps) {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const router = useRouter();
@@ -41,7 +42,7 @@ export function AppLayout({ children, appointments = [], messages = [], currentD
             </Link>
           </div>
           <div className="flex items-center gap-3">
-              {currentDate && onPrevDay && onNextDay && onToday && (
+              {currentDate && onPrevDay && onNextDay && onDateSelect && (
                  <div className="flex items-center gap-1 rounded-md border p-0.5">
                     <Button
                         variant="ghost"
@@ -52,14 +53,25 @@ export function AppLayout({ children, appointments = [], messages = [], currentD
                     >
                         <ChevronLeft className="w-4 h-4" />
                     </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="px-3 h-8"
-                        onClick={onToday}
-                    >
-                        {format(currentDate, 'MMMM d')}
-                    </Button>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="px-3 h-8"
+                            >
+                                {format(currentDate, 'MMMM d')}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="center">
+                          <Calendar
+                            mode="single"
+                            selected={currentDate}
+                            onSelect={onDateSelect}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
                     <Button
                         variant="ghost"
                         size="sm"
