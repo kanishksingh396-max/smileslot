@@ -49,8 +49,8 @@ export const mockPatients: Patient[] = [
 ];
 
 export const workingHours = {
-  start: 9, // 9 AM
-  end: 17, // 5 PM
+  start: 8, // 8 AM
+  end: 22, // 10 PM
 };
 
 export const appointmentDuration = 30; // in minutes
