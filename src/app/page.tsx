@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { AppLayout } from "@/components/app-layout";
 import { MainDashboard } from "@/components/dashboard/main-dashboard";
 import {
@@ -11,10 +11,16 @@ import {
 } from '@/firebase';
 import type { Appointment } from '@/lib/types';
 import { collection } from 'firebase/firestore';
+import { addWeeks, subWeeks, startOfToday } from 'date-fns';
 
 export default function Home() {
   const { user } = useUser();
   const firestore = useFirestore();
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setCurrentDate(new Date());
+  }, []);
 
   const appointmentsCollectionRef = useMemoFirebase(() => {
     if (!user) return null;
@@ -34,9 +40,35 @@ export default function Home() {
     );
   }, [appointments]);
 
+  const handlePrevWeek = () => {
+    if (currentDate) {
+      setCurrentDate(subWeeks(currentDate, 1));
+    }
+  };
+
+  const handleNextWeek = () => {
+    if (currentDate) {
+      setCurrentDate(addWeeks(currentDate, 1));
+    }
+  };
+
+  const handleToday = () => {
+    setCurrentDate(startOfToday());
+  };
+
+  if (!currentDate) {
+    return null; // Or a loading spinner
+  }
+
   return (
-    <AppLayout appointments={appointmentsWithDates}>
-      <MainDashboard appointments={appointmentsWithDates} />
+    <AppLayout 
+      appointments={appointmentsWithDates}
+      currentDate={currentDate}
+      onPrevWeek={handlePrevWeek}
+      onNextWeek={handleNextWeek}
+      onToday={handleToday}
+    >
+      <MainDashboard appointments={appointmentsWithDates} currentDate={currentDate} />
     </AppLayout>
   );
 }

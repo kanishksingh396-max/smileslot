@@ -36,10 +36,10 @@ import Link from 'next/link';
 
 type MainDashboardProps = {
   appointments: Appointment[];
+  currentDate: Date;
 };
 
-export function MainDashboard({ appointments }: MainDashboardProps) {
-  const [currentDate, setCurrentDate] = useState<Date | null>(null);
+export function MainDashboard({ appointments, currentDate }: MainDashboardProps) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null);
@@ -47,10 +47,6 @@ export function MainDashboard({ appointments }: MainDashboardProps) {
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
-
-  useEffect(() => {
-    setCurrentDate(new Date());
-  }, []);
 
   const patientsCollectionRef = useMemoFirebase(() => {
     if (!user) return null;
@@ -182,9 +178,6 @@ export function MainDashboard({ appointments }: MainDashboardProps) {
     <div className="space-y-6">
       <CalendarHeader
         currentDate={currentDate}
-        onPrevWeek={() => setCurrentDate(subWeeks(currentDate, 1))}
-        onNextWeek={() => setCurrentDate(addWeeks(currentDate, 1))}
-        onToday={() => setCurrentDate(startOfToday())}
       />
 
       <Card className="shadow-sm">

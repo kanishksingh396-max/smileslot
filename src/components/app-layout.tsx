@@ -5,19 +5,24 @@ import { Button } from "./ui/button";
 import { useAuth, useUser } from "@/firebase";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useRouter } from "next/navigation";
-import { Users, LogOut, LogIn, MessageSquare, Calendar as CalendarIcon } from "lucide-react";
+import { Users, LogOut, LogIn, MessageSquare, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { NotificationsPanel } from "./dashboard/notifications-panel";
 import type { Appointment, ConfirmationMessage } from "@/lib/types";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Calendar } from "./ui/calendar";
+import { format } from "date-fns";
 
 type AppLayoutProps = {
   children: React.ReactNode;
   appointments?: Appointment[];
   messages?: ConfirmationMessage[];
+  currentDate?: Date;
+  onPrevWeek?: () => void;
+  onNextWeek?: () => void;
+  onToday?: () => void;
 };
 
-export function AppLayout({ children, appointments = [], messages = [] }: AppLayoutProps) {
+export function AppLayout({ children, appointments = [], messages = [], currentDate, onPrevWeek, onNextWeek, onToday }: AppLayoutProps) {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const router = useRouter();
@@ -36,6 +41,36 @@ export function AppLayout({ children, appointments = [], messages = [] }: AppLay
             </Link>
           </div>
           <div className="flex items-center gap-3">
+              {currentDate && onPrevWeek && onNextWeek && onToday && (
+                 <div className="flex items-center gap-1 rounded-md border p-0.5">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-8 h-8 p-0"
+                        onClick={onPrevWeek}
+                        aria-label="Previous week"
+                    >
+                        <ChevronLeft className="w-4 h-4" />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="px-3 h-8"
+                        onClick={onToday}
+                    >
+                        {format(currentDate, 'MMMM')}
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-8 h-8 p-0"
+                        onClick={onNextWeek}
+                        aria-label="Next week"
+                    >
+                        <ChevronRight className="w-4 h-4" />
+                    </Button>
+                </div>
+              )}
               <Button asChild variant="outline" size="icon">
                   <Link href="/messages">
                       <MessageSquare className="h-5 w-5" />
