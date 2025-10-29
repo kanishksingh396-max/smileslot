@@ -40,7 +40,7 @@ export function CalendarHeader({
             className="px-3 h-8"
             onClick={onToday}
           >
-            Today
+            {format(currentDate, 'MMMM')}
           </Button>
           <Button
             variant="ghost"
