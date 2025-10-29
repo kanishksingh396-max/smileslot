@@ -40,13 +40,13 @@ export function AppLayout({ children, appointments = [], messages = [], currentD
 
   return (
       <div className="flex flex-col min-h-screen">
-        <header className="flex h-16 items-center gap-4 border-b bg-card px-4 shadow-sm md:px-6 justify-between">
+        <header className="flex h-16 items-center gap-4 border-b bg-card px-2 sm:px-4 shadow-sm md:px-6 justify-between">
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-2">
-                <span className="text-2xl font-semibold font-headline">SmileSLot</span>
+                <span className="text-xl sm:text-2xl font-semibold font-headline">SmileSLot</span>
             </Link>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 sm:gap-3">
               {currentDate && onPrevDay && onNextDay && onDateSelect && onToday && (
                  <div className="flex items-center gap-1 rounded-md border p-0.5">
                     <Button
@@ -63,7 +63,7 @@ export function AppLayout({ children, appointments = [], messages = [], currentD
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="px-3 h-8"
+                                className="px-2 sm:px-3 h-8 text-sm"
                             >
                                 {format(currentDate, 'MMMM d')}
                             </Button>
@@ -99,7 +99,7 @@ export function AppLayout({ children, appointments = [], messages = [], currentD
                     </Button>
                 </div>
               )}
-              <Button asChild variant="outline" size="icon">
+              <Button asChild variant="outline" size="icon" className="h-9 w-9">
                   <Link href="/messages">
                       <MessageSquare className="h-5 w-5" />
                       <span className="sr-only">Messages</span>
