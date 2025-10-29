@@ -5,9 +5,11 @@ import { Button } from "./ui/button";
 import { useAuth, useUser } from "@/firebase";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useRouter } from "next/navigation";
-import { Users, LogOut, LogIn, MessageSquare } from "lucide-react";
+import { Users, LogOut, LogIn, MessageSquare, Calendar as CalendarIcon } from "lucide-react";
 import { NotificationsPanel } from "./dashboard/notifications-panel";
 import type { Appointment, ConfirmationMessage } from "@/lib/types";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Calendar } from "./ui/calendar";
 
 type AppLayoutProps = {
   children: React.ReactNode;
@@ -40,6 +42,22 @@ export function AppLayout({ children, appointments = [], messages = [] }: AppLay
                       <span className="sr-only">Messages</span>
                   </Link>
               </Button>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <CalendarIcon className="h-5 w-5" />
+                    <span className="sr-only">Open Year Calendar</span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto max-w-5xl" align="end">
+                  <Calendar
+                    numberOfMonths={12}
+                    mode="multiple"
+                    pagedNavigation
+                    className="p-0"
+                  />
+                </PopoverContent>
+              </Popover>
               <NotificationsPanel appointments={appointments} />
           </div>
         </header>
