@@ -1,11 +1,12 @@
 'use client';
 
 import Link from "next/link";
+import { useMemo } from "react";
 import { Button } from "./ui/button";
 import { useAuth, useUser } from "@/firebase";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useRouter } from "next/navigation";
-import { Users, LogOut, LogIn, MessageSquare, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { Users, LogOut, LogIn, MessageSquare, ChevronLeft, ChevronRight } from "lucide-react";
 import { NotificationsPanel } from "./dashboard/notifications-panel";
 import type { Appointment, ConfirmationMessage } from "@/lib/types";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -33,6 +34,10 @@ export function AppLayout({ children, appointments = [], messages = [], currentD
     router.push("/login");
   };
 
+  const appointmentDates = useMemo(() => {
+    return appointments.map(appt => appt.startTime);
+  }, [appointments]);
+
   return (
       <div className="flex flex-col min-h-screen">
         <header className="flex h-16 items-center gap-4 border-b bg-card px-4 shadow-sm md:px-6 justify-between">
@@ -42,7 +47,7 @@ export function AppLayout({ children, appointments = [], messages = [], currentD
             </Link>
           </div>
           <div className="flex items-center gap-3">
-              {currentDate && onPrevDay && onNextDay && onDateSelect && (
+              {currentDate && onPrevDay && onNextDay && onDateSelect && onToday && (
                  <div className="flex items-center gap-1 rounded-md border p-0.5">
                     <Button
                         variant="ghost"
@@ -69,7 +74,18 @@ export function AppLayout({ children, appointments = [], messages = [], currentD
                             selected={currentDate}
                             onSelect={onDateSelect}
                             initialFocus
+                            modifiers={{ scheduled: appointmentDates }}
+                            modifiersClassNames={{
+                              scheduled: "font-bold text-destructive",
+                            }}
                           />
+                          <Button
+                              onClick={onToday}
+                              className="w-[calc(100%-1rem)] mx-2 mb-2"
+                              variant="outline"
+                          >
+                            Go to Today
+                          </Button>
                         </PopoverContent>
                       </Popover>
                     <Button
