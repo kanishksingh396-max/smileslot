@@ -8,7 +8,6 @@ import type {
   Patient,
   ConfirmationMessage,
 } from '@/lib/types';
-import { CalendarHeader } from './calendar-header';
 import { WeeklyView } from './weekly-view';
 import {
   Sheet,
@@ -176,10 +175,6 @@ export function MainDashboard({ appointments, currentDate }: MainDashboardProps)
 
   return (
     <div className="space-y-6">
-      <CalendarHeader
-        currentDate={currentDate}
-      />
-
       <Card className="shadow-sm">
         <WeeklyView
           currentDate={currentDate}
