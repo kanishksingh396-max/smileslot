@@ -89,22 +89,6 @@ export function AppLayout({ children, appointments = [], messages = [], currentD
                       <span className="sr-only">Messages</span>
                   </Link>
               </Button>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" size="icon">
-                    <CalendarIcon className="h-5 w-5" />
-                    <span className="sr-only">Open Year Calendar</span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto max-w-5xl" align="end">
-                  <Calendar
-                    numberOfMonths={12}
-                    mode="multiple"
-                    pagedNavigation
-                    className="p-0"
-                  />
-                </PopoverContent>
-              </Popover>
               <NotificationsPanel appointments={appointments} />
           </div>
         </header>
