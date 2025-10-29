@@ -2,19 +2,14 @@
 
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
-import { ChevronLeft, ChevronRight, Users, Bell, MessageSquare } from 'lucide-react';
-import Link from 'next/link';
-import { NotificationsPanel } from './notifications-panel';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Appointment, ConfirmationMessage } from '@/lib/types';
-import { MessagesPanel } from './messages-panel';
 
 type CalendarHeaderProps = {
   currentDate: Date;
   onPrevWeek: () => void;
   onNextWeek: () => void;
   onToday: () => void;
-  appointments: Appointment[];
-  messages: ConfirmationMessage[];
 };
 
 export function CalendarHeader({
@@ -22,8 +17,6 @@ export function CalendarHeader({
   onPrevWeek,
   onNextWeek,
   onToday,
-  appointments,
-  messages,
 }: CalendarHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -59,15 +52,6 @@ export function CalendarHeader({
             <ChevronRight className="w-4 h-4" />
           </Button>
         </div>
-      </div>
-      <div className="flex items-center gap-3">
-        <Button asChild variant="outline" size="icon">
-            <Link href="/messages">
-                <MessageSquare className="h-5 w-5" />
-                <span className="sr-only">Messages</span>
-            </Link>
-        </Button>
-        <NotificationsPanel appointments={appointments} />
       </div>
     </div>
   );

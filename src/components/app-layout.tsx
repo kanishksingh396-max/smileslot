@@ -5,13 +5,17 @@ import { Button } from "./ui/button";
 import { useAuth, useUser } from "@/firebase";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useRouter } from "next/navigation";
-import { Users, LogOut, LogIn } from "lucide-react";
+import { Users, LogOut, LogIn, MessageSquare } from "lucide-react";
+import { NotificationsPanel } from "./dashboard/notifications-panel";
+import type { Appointment, ConfirmationMessage } from "@/lib/types";
 
 type AppLayoutProps = {
   children: React.ReactNode;
+  appointments?: Appointment[];
+  messages?: ConfirmationMessage[];
 };
 
-export function AppLayout({ children }: AppLayoutProps) {
+export function AppLayout({ children, appointments = [], messages = [] }: AppLayoutProps) {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const router = useRouter();
@@ -28,6 +32,15 @@ export function AppLayout({ children }: AppLayoutProps) {
             <Link href="/" className="flex items-center gap-2">
                 <span className="text-2xl font-semibold font-headline">SmileSLot</span>
             </Link>
+          </div>
+          <div className="flex items-center gap-3">
+              <Button asChild variant="outline" size="icon">
+                  <Link href="/messages">
+                      <MessageSquare className="h-5 w-5" />
+                      <span className="sr-only">Messages</span>
+                  </Link>
+              </Button>
+              <NotificationsPanel appointments={appointments} />
           </div>
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6 lg:p-8">

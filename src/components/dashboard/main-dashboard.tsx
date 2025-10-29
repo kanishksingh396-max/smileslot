@@ -34,13 +34,16 @@ import { Button } from '../ui/button';
 import { Plus, Menu, Users } from 'lucide-react';
 import Link from 'next/link';
 
-export function MainDashboard() {
+type MainDashboardProps = {
+  appointments: Appointment[];
+};
+
+export function MainDashboard({ appointments }: MainDashboardProps) {
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
-  const [messages, setMessages] = useState<ConfirmationMessage[]>([]);
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
@@ -49,19 +52,17 @@ export function MainDashboard() {
     setCurrentDate(new Date());
   }, []);
 
-  const appointmentsCollectionRef = useMemoFirebase(() => {
-    if (!user) return null;
-    return collection(firestore, 'dentists', user.uid, 'appointments');
-  }, [firestore, user]);
-
   const patientsCollectionRef = useMemoFirebase(() => {
     if (!user) return null;
     return collection(firestore, 'dentists', user.uid, 'clients');
   }, [firestore, user]);
 
-  const { data: appointments } =
-    useCollection<Appointment>(appointmentsCollectionRef);
-  const { data: patients, isLoading: patientsLoading } =
+  const appointmentsCollectionRef = useMemoFirebase(() => {
+    if (!user) return null;
+    return collection(firestore, 'dentists', user.uid, 'appointments');
+  }, [firestore, user]);
+
+  const { data: patients } =
     useCollection<Patient>(patientsCollectionRef);
     
   const handleAddAppointment = () => {
@@ -105,22 +106,7 @@ export function MainDashboard() {
       clientPhone: patient.phone,
     };
 
-    const handleSuccess = (appointmentId: string) => {
-        const dentistPhoneNumber = user.phoneNumber || "your dental office";
-        const clinicName = user.displayName || "our clinic";
-        const messageBody = `Hi ${patient.name}, this is a reminder for your appointment at ${clinicName} on ${format(appointmentData.startTime, "PPP")} at ${format(appointmentData.startTime, "p")}. Please call ${dentistPhoneNumber} to reschedule. We look forward to seeing you!`;
-    
-        const newMessage: ConfirmationMessage = {
-          id: new Date().toISOString(),
-          appointmentId: appointmentId,
-          patientName: patient.name,
-          patientPhone: patient.phone,
-          appointmentDate: format(appointmentData.startTime, 'PPP'),
-          appointmentTime: format(appointmentData.startTime, 'p'),
-          messageBody: messageBody,
-        };
-        setMessages((prev) => [newMessage, ...prev]);
-
+    const handleSuccess = () => {
         toast({
             title: selectedAppointment ? 'Appointment Updated' : 'Appointment Scheduled',
             description: `Appointment for ${appointmentData.clientName} has been successfully ${selectedAppointment ? 'updated' : 'scheduled'}.`,
@@ -131,13 +117,13 @@ export function MainDashboard() {
       // Edit existing appointment
       const docRef = doc(appointmentsCollectionRef, selectedAppointment.id);
       updateDocumentNonBlocking(docRef, appointmentData);
-      handleSuccess(selectedAppointment.id);
+      handleSuccess();
       
     } else {
       // Create new appointment
       addDocumentNonBlocking(appointmentsCollectionRef, appointmentData).then(docRef => {
         if (docRef) {
-            handleSuccess(docRef.id);
+            handleSuccess();
         }
       });
     }
@@ -145,7 +131,7 @@ export function MainDashboard() {
   };
 
   const handleDeleteAppointment = () => {
-    if (!appointmentsCollectionref || !selectedAppointment) return;
+    if (!appointmentsCollectionRef || !selectedAppointment) return;
     const docRef = doc(appointmentsCollectionRef, selectedAppointment.id);
     deleteDocumentNonBlocking(docRef);
     toast({
@@ -188,16 +174,6 @@ export function MainDashboard() {
     }
   };
 
-  const appointmentsWithDates = useMemo(() => {
-    return (
-      appointments?.map((appt) => ({
-        ...appt,
-        startTime: (appt.startTime as any).toDate(),
-        endTime: (appt.endTime as any).toDate(),
-      })) || []
-    );
-  }, [appointments]);
-
   if (!currentDate) {
     return null; // Or a loading spinner
   }
@@ -209,14 +185,12 @@ export function MainDashboard() {
         onPrevWeek={() => setCurrentDate(subWeeks(currentDate, 1))}
         onNextWeek={() => setCurrentDate(addWeeks(currentDate, 1))}
         onToday={() => setCurrentDate(startOfToday())}
-        appointments={appointmentsWithDates}
-        messages={messages}
       />
 
       <Card className="shadow-sm">
         <WeeklyView
           currentDate={currentDate}
-          appointments={appointmentsWithDates}
+          appointments={appointments}
           onSlotClick={handleSlotClick}
           onAppointmentClick={handleAppointmentClick}
         />
